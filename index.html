@@ -66,7 +66,7 @@
     }
     h2 { margin-top: 0; font-size: 1.2rem; color: #0f172a; }
     label { display: block; font-size: 0.82rem; font-weight: 600; margin-top: 14px; margin-bottom: 5px; color: #475569; }
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 9px 12px;
       border: 1px solid var(--border);
@@ -74,11 +74,17 @@
       box-sizing: border-box;
       font-size: 0.9rem;
       color: var(--text);
+      background: white;
     }
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(59, 91, 253, 0.15);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
     .btn {
       background: var(--primary);
@@ -136,17 +142,52 @@
       border-bottom: 2px solid var(--border);
       padding-bottom: 20px;
       margin-bottom: 20px;
+      position: relative; /* Importante para el cuadro de la letra */
     }
     .brand-section {
       display: flex;
       align-items: center;
       gap: 16px;
+      max-width: 40%;
     }
     .brand-logo-invoice {
       width: 72px;
       height: 72px;
       object-fit: contain;
       flex-shrink: 0;
+    }
+
+    /* Cuadro de la Letra de AFIP */
+    .doc-letter-box {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: -5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border: 2px solid #0f172a;
+      background: white;
+    }
+    .doc-letter {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+    }
+    .doc-code {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 3px;
+    }
+
+    .inv-details-header {
+      text-align: right;
+      max-width: 40%;
     }
     .inv-table {
       width: 100%;
@@ -176,12 +217,22 @@
     .inv-observations {
       flex: 1;
     }
-    .inv-total {
+    .inv-total-container {
       text-align: right;
-      font-size: 1.25rem;
+      white-space: nowrap;
+    }
+    .inv-currency-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .inv-total {
+      font-size: 1.3rem;
       font-weight: 700;
       color: #0f172a;
-      white-space: nowrap;
+      margin-top: 2px;
     }
 
     /* Reglas para imprimir */
@@ -195,13 +246,16 @@
     @media (max-width: 800px) {
       .container { grid-template-columns: 1fr; }
       .inv-footer { flex-direction: column; }
-      .inv-total { width: 100%; }
+      .inv-total-container { width: 100%; text-align: right; }
+      .brand-section, .inv-details-header { max-width: 100%; }
+      .inv-header { flex-direction: column; gap: 15px; align-items: stretch; }
+      .doc-letter-box { position: relative; left: auto; transform: none; margin: 0 auto; top: auto; }
+      .inv-details-header { text-align: left; }
     }
   </style>
 </head>
 <body>
 
-<!-- Encabezado Principal de la Página (Se oculta al imprimir) -->
 <div class="main-header no-print">
   <img src="logo-transparente.webp" alt="LoomTech Logo" class="header-logo">
   <div class="header-title">
@@ -213,10 +267,41 @@
 <div class="container">
   <!-- Panel de Formulario -->
   <div class="panel no-print">
-    <h2>Datos de la Factura</h2>
+    <h2>Datos del Documento</h2>
 
-    <label>Tipo de Documento</label>
-    <input type="text" id="docType" value="Presupuesto / Comprobante" oninput="updateInvoice()">
+    <div class="grid-2">
+      <div>
+        <label>Tipo de Documento</label>
+        <select id="docTypeSelect" onchange="handleDocTypeChange()">
+          <optgroup label="Comprobantes Oficiales (Formato)">
+            <option value="Factura A">Factura A</option>
+            <option value="Factura B">Factura B</option>
+            <option value="Factura C">Factura C</option>
+          </optgroup>
+          <optgroup label="Documentos Simples">
+            <option value="Presupuesto" selected>Presupuesto</option>
+            <option value="Recibo X">Recibo X</option>
+            <option value="Comprobante de Pago">Comprobante de Pago</option>
+            <option value="Orden de Trabajo">Orden de Trabajo</option>
+            <option value="__custom__">Personalizado...</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div>
+        <label>Moneda</label>
+        <select id="currencySelect" onchange="updateInvoice()">
+          <option value="ARS">Pesos Argentinos (ARS)</option>
+          <option value="USD">Dólares Estadounidenses (USD)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Campo que aparece sólo si se elige Personalizado -->
+    <div id="customDocTypeContainer" style="display: none;">
+      <label>Título Personalizado</label>
+      <input type="text" id="customDocType" placeholder="Ej: Nota de Venta" oninput="updateInvoice()">
+    </div>
 
     <label>Fecha de Emisión</label>
     <input type="date" id="invDate" oninput="updateInvoice()">
@@ -224,15 +309,15 @@
     <label>Nombre del Cliente / Empresa</label>
     <input type="text" id="clientName" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
 
-    <label>Datos Adicionales del Cliente (CUIT, Dirección, Email)</label>
-    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Córdoba Capital" oninput="updateInvoice()"></textarea>
+    <label>Datos Adicionales del Cliente (CUIT, Dirección, Condición IVA)</label>
+    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto&#10;Córdoba Capital" oninput="updateInvoice()"></textarea>
 
     <label>Ítems y Servicios</label>
     <div id="itemsContainer"></div>
     <button type="button" class="btn btn-secondary" onclick="addItem()">+ Agregar Ítem</button>
 
     <label>Observaciones / Notas</label>
-    <textarea id="observations" rows="2" placeholder="Ej: Validez del presupuesto: 15 días.&#10;Condiciones de pago: Transferencia bancaria." oninput="updateInvoice()"></textarea>
+    <textarea id="observations" rows="2" placeholder="Ej: Validez: 15 días.&#10;Condición: Transferencia bancaria." oninput="updateInvoice()"></textarea>
 
     <button type="button" class="btn" onclick="window.print()">Imprimir / Guardar en PDF</button>
   </div>
@@ -240,26 +325,36 @@
   <!-- Vista Previa de la Factura -->
   <div id="invoice">
     <div class="inv-header">
+      
+      <!-- Bloque de Emisor -->
       <div class="brand-section">
-        <!-- Logo en la Factura -->
         <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice">
         <div>
           <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
-            Córdoba, Argentina<br>
-            Tel: +54 351 376-4531<br>
-            Loomtechargentina@gmail.com
+            Razón Social: LoomTech S.A.<br>
+            CUIT: 30-XXXXXXXX-X<br>
+            Condición frente al IVA: Responsable Inscripto<br>
+            Córdoba, Argentina | +54 351 376-4531
           </p>
         </div>
       </div>
 
-      <div style="text-align: right;">
-        <h3 id="viewDocType" style="margin: 0; font-size: 0.95rem; text-transform: uppercase; color: #334155;">Presupuesto / Comprobante</h3>
-        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Fecha: <span id="viewDate"></span></p>
+      <!-- Cuadro de Letra Central (Se oculta dinámicamente si es Presupuesto) -->
+      <div class="doc-letter-box" id="viewDocLetterBox" style="display: none;">
+        <div class="doc-letter" id="viewDocLetter">C</div>
+        <div class="doc-code" id="viewDocCode">Cod. 011</div>
+      </div>
+
+      <!-- Bloque Tipo Doc. -->
+      <div class="inv-details-header">
+        <h3 id="viewDocType" style="margin: 0; font-size: 1rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
+        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
+        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: var(--primary);">MONEDA: ARS ($)</p>
       </div>
     </div>
 
-    <div style="margin-bottom: 22px;">
+    <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid var(--border);">
       <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Receptor / Cliente</strong>
       <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
       <div id="viewClientDetails" style="font-size: 0.85rem; color: #475569; margin-top: 2px; white-space: pre-line; min-height: 14px;"></div>
@@ -270,8 +365,8 @@
         <tr>
           <th>Descripción</th>
           <th class="text-right">Cant.</th>
-          <th class="text-right">Unitario</th>
-          <th class="text-right">Total</th>
+          <th class="text-right">Unitario (<span class="col-curr-symbol">$</span>)</th>
+          <th class="text-right">Total (<span class="col-curr-symbol">$</span>)</th>
         </tr>
       </thead>
       <tbody id="viewItems"></tbody>
@@ -282,8 +377,11 @@
         <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Observaciones:</strong>
         <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line;">-</p>
       </div>
-      <div class="inv-total">
-        Total: $<span id="viewGrandTotal">0.00</span>
+      <div class="inv-total-container">
+        <div class="inv-currency-label" id="viewTotalCurrencyLabel">Total ARS</div>
+        <div class="inv-total">
+          <span id="viewGrandTotalSymbol">$</span> <span id="viewGrandTotal">0.00</span>
+        </div>
       </div>
     </div>
   </div>
@@ -300,6 +398,17 @@
     updateInvoice();
   }
 
+  function handleDocTypeChange() {
+    const select = document.getElementById('docTypeSelect');
+    const customContainer = document.getElementById('customDocTypeContainer');
+    if (select.value === '__custom__') {
+      customContainer.style.display = 'block';
+    } else {
+      customContainer.style.display = 'none';
+    }
+    updateInvoice();
+  }
+
   function renderFormItems() {
     const container = document.getElementById('itemsContainer');
     container.innerHTML = '';
@@ -309,7 +418,7 @@
       row.innerHTML = `
         <input type="text" placeholder="Descripción" value="${item.desc}" oninput="updateItem(${index}, 'desc', this.value)">
         <input type="number" placeholder="Cant." value="${item.qty}" min="1" oninput="updateItem(${index}, 'qty', this.value)">
-        <input type="number" placeholder="Precio" value="${item.price}" min="0" oninput="updateItem(${index}, 'price', this.value)">
+        <input type="number" placeholder="Precio" value="${item.price}" min="0" step="any" oninput="updateItem(${index}, 'price', this.value)">
         <button class="remove-btn" title="Eliminar ítem" onclick="removeItem(${index})">&times;</button>
       `;
       container.appendChild(row);
@@ -336,19 +445,53 @@
   }
 
   function updateInvoice() {
-    // Textos cabecera y cliente
+    // 1. Lógica del Tipo de Documento y Recuadro Central
+    const select = document.getElementById('docTypeSelect');
+    let docTitle = select.value;
+    if (select.value === '__custom__') {
+      docTitle = document.getElementById('customDocType').value || 'Comprobante';
+    }
+    document.getElementById('viewDocType').innerText = docTitle;
+
+    const letterBox = document.getElementById('viewDocLetterBox');
+    const letterEl = document.getElementById('viewDocLetter');
+    const codeEl = document.getElementById('viewDocCode');
+    
+    let showLetterBox = false;
+    let titleUpper = docTitle.toUpperCase();
+
+    if (titleUpper.includes('FACTURA A')) {
+      letterEl.innerText = 'A'; codeEl.innerText = 'Cod. 01'; showLetterBox = true;
+    } else if (titleUpper.includes('FACTURA B')) {
+      letterEl.innerText = 'B'; codeEl.innerText = 'Cod. 06'; showLetterBox = true;
+    } else if (titleUpper.includes('FACTURA C')) {
+      letterEl.innerText = 'C'; codeEl.innerText = 'Cod. 11'; showLetterBox = true;
+    } else if (titleUpper.includes('RECIBO X')) {
+      letterEl.innerText = 'X'; codeEl.innerText = 'No Válido'; showLetterBox = true;
+    }
+
+    letterBox.style.display = showLetterBox ? 'flex' : 'none';
+
+    // 2. Configuración de Moneda
+    const currency = document.getElementById('currencySelect').value;
+    const isUSD = currency === 'USD';
+    const symbol = isUSD ? 'USD' : '$';
+    const locale = isUSD ? 'en-US' : 'es-AR';
+
+    document.getElementById('viewCurrencyBadge').innerText = isUSD ? 'MONEDA: USD (Dólares)' : 'MONEDA: ARS (Pesos)';
+    document.querySelectorAll('.col-curr-symbol').forEach(el => el.innerText = symbol);
+    document.getElementById('viewTotalCurrencyLabel').innerText = isUSD ? 'Total USD' : 'Total ARS';
+    document.getElementById('viewGrandTotalSymbol').innerText = symbol;
+
+    // 3. Datos de Cliente y Fecha
     document.getElementById('viewClient').innerText = document.getElementById('clientName').value || 'Consumidor Final';
     document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
-    document.getElementById('viewDocType').innerText = document.getElementById('docType').value || 'Comprobante';
-    
-    // Observaciones
     document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
 
-    // Fecha
     const dateVal = document.getElementById('invDate').value;
     document.getElementById('viewDate').innerText = dateVal ? dateVal.split('-').reverse().join('/') : '-';
 
-    // Items de la tabla
+    // 4. Render de Ítems y cálculo total
     const tbody = document.getElementById('viewItems');
     tbody.innerHTML = '';
     let grandTotal = 0;
@@ -360,13 +503,13 @@
       tr.innerHTML = `
         <td>${item.desc || '-'}</td>
         <td class="text-right">${item.qty}</td>
-        <td class="text-right">$${item.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
-        <td class="text-right">$${subtotal.toLocaleString('es-AR', {minimumFractionDigits: 2})}</td>
+        <td class="text-right">${symbol} ${item.price.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="text-right">${symbol} ${subtotal.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
       `;
       tbody.appendChild(tr);
     });
 
-    document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString('es-AR', {minimumFractionDigits: 2});
+    document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
   }
 
   init();
