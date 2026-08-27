@@ -20,7 +20,6 @@
       color: var(--text);
     }
     
-    /* Header Principal / Banner */
     .main-header {
       max-width: 960px;
       margin: 0 auto 24px auto;
@@ -32,23 +31,9 @@
       align-items: center;
       gap: 20px;
     }
-    .header-logo {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-    .header-title h1 {
-      margin: 0;
-      font-size: 1.6rem;
-      color: var(--primary);
-      letter-spacing: -0.5px;
-    }
-    .header-title p {
-      margin: 4px 0 0 0;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
+    .header-logo { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
+    .header-title h1 { margin: 0; font-size: 1.6rem; color: var(--primary); letter-spacing: -0.5px; }
+    .header-title p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.9rem; }
 
     .container {
       max-width: 960px;
@@ -64,178 +49,52 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       height: fit-content;
     }
+    .panel-full {
+      grid-column: 1 / -1;
+    }
+    
     h2 { margin-top: 0; font-size: 1.2rem; color: #0f172a; }
     label { display: block; font-size: 0.82rem; font-weight: 600; margin-top: 14px; margin-bottom: 5px; color: #475569; }
     input, textarea, select {
-      width: 100%;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 0.9rem;
-      color: var(--text);
-      background: white;
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 0.9rem; color: var(--text); background: white;
     }
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(59, 91, 253, 0.15);
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-top: 20px;
-      width: 100%;
-      transition: background-color 0.2s;
-    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 91, 253, 0.15); }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    
+    .btn { background: var(--primary); color: white; border: none; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95rem; margin-top: 20px; width: 100%; transition: background-color 0.2s; }
     .btn:hover { background: var(--primary-dark); }
-    .btn-secondary {
-      background: #f1f5f9;
-      color: #334155;
-      margin-top: 10px;
-      padding: 8px 12px;
-      font-size: 0.85rem;
-    }
+    .btn-secondary { background: #f1f5f9; color: #334155; border: 1px solid var(--border); padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; }
     .btn-secondary:hover { background: #e2e8f0; }
-    .item-row {
-      display: grid;
-      grid-template-columns: 3fr 1fr 1.5fr 28px;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-    .remove-btn {
-      background: none;
-      border: none;
-      color: #ef4444;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1.2rem;
-      padding: 0;
-      line-height: 1;
-    }
+    .btn-sm { padding: 4px 10px; font-size: 0.8rem; margin-left: 4px; }
+    .btn-danger { color: #ef4444; }
 
-    /* Vista previa / Factura */
-    #invoice {
-      background: white;
-      padding: 36px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      box-sizing: border-box;
-      border: 1px solid var(--border);
-    }
-    .inv-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-      position: relative; /* Importante para el cuadro de la letra */
-    }
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      max-width: 40%;
-    }
-    .brand-logo-invoice {
-      width: 72px;
-      height: 72px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
+    .item-row { display: grid; grid-template-columns: 3fr 1fr 1.5fr 28px; gap: 8px; margin-bottom: 8px; align-items: center; }
+    .remove-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; font-size: 1.2rem; padding: 0; line-height: 1; }
 
-    /* Cuadro de la Letra de AFIP */
-    .doc-letter-box {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -5px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      border: 2px solid #0f172a;
-      background: white;
-    }
-    .doc-letter {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #0f172a;
-      line-height: 1;
-    }
-    .doc-code {
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-top: 3px;
-    }
+    /* Factura */
+    #invoice { background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); box-sizing: border-box; border: 1px solid var(--border); }
+    .inv-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; position: relative; }
+    .brand-section { display: flex; align-items: center; gap: 16px; max-width: 40%; }
+    .brand-logo-invoice { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
+    
+    .doc-letter-box { position: absolute; left: 50%; transform: translateX(-50%); top: -5px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 64px; height: 64px; border: 2px solid #0f172a; background: white; }
+    .doc-letter { font-size: 2.2rem; font-weight: 900; color: #0f172a; line-height: 1; }
+    .doc-code { font-size: 0.6rem; font-weight: 700; color: #0f172a; margin-top: 3px; }
 
-    .inv-details-header {
-      text-align: right;
-      max-width: 40%;
-    }
-    .inv-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    .inv-table th, .inv-table td {
-      padding: 10px 8px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.88rem;
-    }
-    .inv-table th { 
-      background: #f8fafc; 
-      color: #475569;
-      font-weight: 600;
-    }
+    .inv-details-header { text-align: right; max-width: 40%; }
+    .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .inv-table th, .inv-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .inv-table th { background: #f8fafc; color: #475569; font-weight: 600; }
     .text-right { text-align: right !important; }
     
-    .inv-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-top: 24px;
-      gap: 24px;
-    }
-    .inv-observations {
-      flex: 1;
-    }
-    .inv-total-container {
-      text-align: right;
-      white-space: nowrap;
-    }
-    .inv-currency-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .inv-total {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-top: 2px;
-    }
+    .inv-footer { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 24px; gap: 24px; }
+    .inv-observations { flex: 1; }
+    .inv-total-container { text-align: right; white-space: nowrap; }
+    .inv-currency-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .inv-total { font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-top: 2px; }
 
-    /* Reglas para imprimir */
     @media print {
       body { background: white; padding: 0; }
       .no-print { display: none !important; }
@@ -257,7 +116,7 @@
 <body>
 
 <div class="main-header no-print">
-  <img src="logo-transparente.webp" alt="LoomTech Logo" class="header-logo">
+  <img src="logo-transparente.webp" alt="LoomTech Logo" class="header-logo" onerror="this.style.display='none'">
   <div class="header-title">
     <h1>LoomTech</h1>
     <p>Sistema de Emisión de Presupuestos y Comprobantes</p>
@@ -273,7 +132,7 @@
       <div>
         <label>Tipo de Documento</label>
         <select id="docTypeSelect" onchange="handleDocTypeChange()">
-          <optgroup label="Comprobantes Oficiales (Formato)">
+          <optgroup label="Comprobantes Oficiales">
             <option value="Factura A">Factura A</option>
             <option value="Factura B">Factura B</option>
             <option value="Factura C">Factura C</option>
@@ -287,17 +146,15 @@
           </optgroup>
         </select>
       </div>
-
       <div>
         <label>Moneda</label>
         <select id="currencySelect" onchange="updateInvoice()">
           <option value="ARS">Pesos Argentinos (ARS)</option>
-          <option value="USD">Dólares Estadounidenses (USD)</option>
+          <option value="USD">Dólares (USD)</option>
         </select>
       </div>
     </div>
 
-    <!-- Campo que aparece sólo si se elige Personalizado -->
     <div id="customDocTypeContainer" style="display: none;">
       <label>Título Personalizado</label>
       <input type="text" id="customDocType" placeholder="Ej: Nota de Venta" oninput="updateInvoice()">
@@ -314,47 +171,43 @@
       </div>
     </div>
 
-    <label>Nombre del Cliente / Empresa</label>
+    <label>Cliente / Empresa</label>
     <input type="text" id="clientName" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
 
-    <label>Datos Adicionales del Cliente (CUIT, Dirección, Condición IVA)</label>
-    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto&#10;Córdoba Capital" oninput="updateInvoice()"></textarea>
+    <label>Datos Adicionales del Cliente</label>
+    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto" oninput="updateInvoice()"></textarea>
 
     <label>Ítems y Servicios</label>
     <div id="itemsContainer"></div>
-    <button type="button" class="btn btn-secondary" onclick="addItem()">+ Agregar Ítem</button>
+    <button type="button" class="btn-secondary" style="margin-top:8px; width: 100%" onclick="addItem()">+ Agregar Ítem</button>
 
     <label>Observaciones / Notas</label>
-    <textarea id="observations" rows="2" placeholder="Ej: Validez: 15 días.&#10;Condición: Transferencia bancaria." oninput="updateInvoice()"></textarea>
+    <textarea id="observations" rows="2" placeholder="Condiciones de pago..." oninput="updateInvoice()"></textarea>
 
-    <button type="button" class="btn" onclick="printAndIncrement()">Imprimir / Guardar en PDF</button>
+    <button type="button" class="btn" onclick="saveAndPrint()">Imprimir y Guardar en Historial</button>
   </div>
 
-  <!-- Vista Previa de la Factura -->
+  <!-- Vista Previa -->
   <div id="invoice">
     <div class="inv-header">
-      
-      <!-- Bloque de Emisor -->
       <div class="brand-section">
-        <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice">
+        <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice" onerror="this.style.display='none'">
         <div>
           <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
             Razón Social: LoomTech S.A.<br>
             CUIT: 30-XXXXXXXX-X<br>
-            Condición frente al IVA: Responsable Inscripto<br>
+            Condición IVA: Responsable Inscripto<br>
             Córdoba, Argentina | +54 351 376-4531
           </p>
         </div>
       </div>
 
-      <!-- Cuadro de Letra Central (Se oculta dinámicamente si es Presupuesto) -->
       <div class="doc-letter-box" id="viewDocLetterBox" style="display: none;">
         <div class="doc-letter" id="viewDocLetter">C</div>
         <div class="doc-code" id="viewDocCode">Cod. 011</div>
       </div>
 
-      <!-- Bloque Tipo Doc. -->
       <div class="inv-details-header">
         <h3 id="viewDocType" style="margin: 0; font-size: 1rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
         <p style="margin: 4px 0 0 0; font-size: 0.95rem; font-weight: bold; color: #0f172a;">N° <span id="viewInvNumber">00000001</span></p>
@@ -364,7 +217,7 @@
     </div>
 
     <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid var(--border);">
-      <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Receptor / Cliente</strong>
+      <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Receptor / Cliente</strong>
       <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
       <div id="viewClientDetails" style="font-size: 0.85rem; color: #475569; margin-top: 2px; white-space: pre-line; min-height: 14px;"></div>
     </div>
@@ -383,7 +236,7 @@
 
     <div class="inv-footer">
       <div class="inv-observations">
-        <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Observaciones:</strong>
+        <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Observaciones:</strong>
         <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line;">-</p>
       </div>
       <div class="inv-total-container">
@@ -394,31 +247,51 @@
       </div>
     </div>
   </div>
+
+  <!-- Panel de Historial -->
+  <div class="panel panel-full no-print">
+    <div class="flex-between">
+      <h2>Historial de Comprobantes</h2>
+      <div>
+        <button class="btn-secondary" onclick="exportHistory()">⬇ Exportar JSON</button>
+        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importHistory(event)">
+        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Importar JSON</button>
+      </div>
+    </div>
+    
+    <table class="inv-table" style="margin-top: 16px;">
+      <thead>
+        <tr>
+          <th>N° Doc</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th class="text-right">Total</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="historyTableBody">
+        <!-- Rellenado por JS -->
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <script>
-  let items = [
-    { desc: 'Desarrollo de Software / Servicio Técnico', qty: 1, price: 50000 }
-  ];
+  let items = [ { desc: 'Servicio', qty: 1, price: 0 } ];
 
   function init() {
-    // Cargar número de factura de localStorage
-    let nextNum = localStorage.getItem('loomtech_next_inv_num') || 1;
-    document.getElementById('invNumber').value = nextNum;
-    
+    document.getElementById('invNumber').value = localStorage.getItem('loomtech_next_inv_num') || 1;
     document.getElementById('invDate').valueAsDate = new Date();
     renderFormItems();
     updateInvoice();
+    renderHistory();
   }
 
   function handleDocTypeChange() {
-    const select = document.getElementById('docTypeSelect');
-    const customContainer = document.getElementById('customDocTypeContainer');
-    if (select.value === '__custom__') {
-      customContainer.style.display = 'block';
-    } else {
-      customContainer.style.display = 'none';
-    }
+    document.getElementById('customDocTypeContainer').style.display = 
+      document.getElementById('docTypeSelect').value === '__custom__' ? 'block' : 'none';
     updateInvoice();
   }
 
@@ -432,123 +305,169 @@
         <input type="text" placeholder="Descripción" value="${item.desc}" oninput="updateItem(${index}, 'desc', this.value)">
         <input type="number" placeholder="Cant." value="${item.qty}" min="1" oninput="updateItem(${index}, 'qty', this.value)">
         <input type="number" placeholder="Precio" value="${item.price}" min="0" step="any" oninput="updateItem(${index}, 'price', this.value)">
-        <button class="remove-btn" title="Eliminar ítem" onclick="removeItem(${index})">&times;</button>
+        <button class="remove-btn" onclick="removeItem(${index})">&times;</button>
       `;
       container.appendChild(row);
     });
   }
 
-  function addItem() {
-    items.push({ desc: '', qty: 1, price: 0 });
-    renderFormItems();
-    updateInvoice();
-  }
-
-  function updateItem(index, key, val) {
-    items[index][key] = key === 'desc' ? val : (parseFloat(val) || 0);
-    updateInvoice();
-  }
-
-  function removeItem(index) {
-    if (items.length > 1) {
-      items.splice(index, 1);
-      renderFormItems();
-      updateInvoice();
-    }
-  }
+  function addItem() { items.push({ desc: '', qty: 1, price: 0 }); renderFormItems(); updateInvoice(); }
+  function updateItem(i, k, v) { items[i][k] = k === 'desc' ? v : (parseFloat(v) || 0); updateInvoice(); }
+  function removeItem(i) { if(items.length > 1) { items.splice(i, 1); renderFormItems(); updateInvoice(); } }
 
   function updateInvoice() {
-    // 1. Lógica del Tipo de Documento y Recuadro Central
-    const select = document.getElementById('docTypeSelect');
-    let docTitle = select.value;
-    if (select.value === '__custom__') {
-      docTitle = document.getElementById('customDocType').value || 'Comprobante';
-    }
+    const docSelect = document.getElementById('docTypeSelect').value;
+    let docTitle = docSelect === '__custom__' ? (document.getElementById('customDocType').value || 'Comprobante') : docSelect;
     document.getElementById('viewDocType').innerText = docTitle;
 
-    const letterBox = document.getElementById('viewDocLetterBox');
-    const letterEl = document.getElementById('viewDocLetter');
-    const codeEl = document.getElementById('viewDocCode');
-    
-    let showLetterBox = false;
-    let titleUpper = docTitle.toUpperCase();
-
-    if (titleUpper.includes('FACTURA A')) {
-      letterEl.innerText = 'A'; codeEl.innerText = 'Cod. 01'; showLetterBox = true;
-    } else if (titleUpper.includes('FACTURA B')) {
-      letterEl.innerText = 'B'; codeEl.innerText = 'Cod. 06'; showLetterBox = true;
-    } else if (titleUpper.includes('FACTURA C')) {
-      letterEl.innerText = 'C'; codeEl.innerText = 'Cod. 11'; showLetterBox = true;
-    } else if (titleUpper.includes('RECIBO X')) {
-      letterEl.innerText = 'X'; codeEl.innerText = 'No Válido'; showLetterBox = true;
+    const showLetterBox = /FACTURA A|FACTURA B|FACTURA C|RECIBO X/i.test(docTitle);
+    document.getElementById('viewDocLetterBox').style.display = showLetterBox ? 'flex' : 'none';
+    if(showLetterBox) {
+      if(/FACTURA A/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='A'; document.getElementById('viewDocCode').innerText='Cod. 01'; }
+      if(/FACTURA B/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='B'; document.getElementById('viewDocCode').innerText='Cod. 06'; }
+      if(/FACTURA C/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='C'; document.getElementById('viewDocCode').innerText='Cod. 11'; }
+      if(/RECIBO X/i.test(docTitle))  { document.getElementById('viewDocLetter').innerText='X'; document.getElementById('viewDocCode').innerText=''; }
     }
 
-    letterBox.style.display = showLetterBox ? 'flex' : 'none';
-
-    // 2. Configuración de Moneda
-    const currency = document.getElementById('currencySelect').value;
-    const isUSD = currency === 'USD';
-    const symbol = isUSD ? 'USD' : '$';
-    const locale = isUSD ? 'en-US' : 'es-AR';
-
+    const isUSD = document.getElementById('currencySelect').value === 'USD';
+    const sym = isUSD ? 'USD' : '$'; const loc = isUSD ? 'en-US' : 'es-AR';
     document.getElementById('viewCurrencyBadge').innerText = isUSD ? 'MONEDA: USD (Dólares)' : 'MONEDA: ARS (Pesos)';
-    document.querySelectorAll('.col-curr-symbol').forEach(el => el.innerText = symbol);
+    document.querySelectorAll('.col-curr-symbol').forEach(el => el.innerText = sym);
     document.getElementById('viewTotalCurrencyLabel').innerText = isUSD ? 'Total USD' : 'Total ARS';
-    document.getElementById('viewGrandTotalSymbol').innerText = symbol;
+    document.getElementById('viewGrandTotalSymbol').innerText = sym;
 
-    // 3. Datos de Cliente y Fecha
-    const clientName = document.getElementById('clientName').value || 'Consumidor Final';
-    document.getElementById('viewClient').innerText = clientName;
+    const cName = document.getElementById('clientName').value || 'Consumidor Final';
+    document.getElementById('viewClient').innerText = cName;
     document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
     document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
-
-    // Formatear y mostrar número de comprobante (ej: 00000005)
-    const invNumVal = document.getElementById('invNumber').value || 1;
-    const formattedNum = String(invNumVal).padStart(8, '0');
-    document.getElementById('viewInvNumber').innerText = formattedNum;
+    document.getElementById('viewInvNumber').innerText = String(document.getElementById('invNumber').value || 1).padStart(8, '0');
     
-    // Cambiar el título del documento para que al guardar el PDF sugiera este nombre
-    // Reemplaza espacios y caracteres no deseados en el título del archivo
-    const safeDocTitle = docTitle.replace(/[^a-zA-Z0-9]/g, '_');
-    const safeClientName = clientName.replace(/[^a-zA-Z0-9]/g, '_');
-    document.title = `${safeDocTitle}_N${formattedNum}_${safeClientName}`;
-    
-    const dateVal = document.getElementById('invDate').value;
-    document.getElementById('viewDate').innerText = dateVal ? dateVal.split('-').reverse().join('/') : '-';
+    document.title = `${docTitle.replace(/[^a-zA-Z0-9]/g,'_')}_N${document.getElementById('viewInvNumber').innerText}_${cName.replace(/[^a-zA-Z0-9]/g,'_')}`;
+    const dVal = document.getElementById('invDate').value;
+    document.getElementById('viewDate').innerText = dVal ? dVal.split('-').reverse().join('/') : '-';
 
-    // 4. Render de Ítems y cálculo total
-    const tbody = document.getElementById('viewItems');
-    tbody.innerHTML = '';
+    const tbody = document.getElementById('viewItems'); tbody.innerHTML = '';
     let grandTotal = 0;
-
     items.forEach(item => {
-      const subtotal = item.qty * item.price;
-      grandTotal += subtotal;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.desc || '-'}</td>
-        <td class="text-right">${item.qty}</td>
-        <td class="text-right">${symbol} ${item.price.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-        <td class="text-right">${symbol} ${subtotal.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-      `;
-      tbody.appendChild(tr);
+      const sub = item.qty * item.price; grandTotal += sub;
+      tbody.innerHTML += `<tr><td>${item.desc}</td><td class="text-right">${item.qty}</td><td class="text-right">${sym} ${item.price.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td class="text-right">${sym} ${sub.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`;
     });
-
-    document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
 
-  function printAndIncrement() {
-    window.print();
-    // Al imprimir, guardar el próximo número en el navegador
-    const currentNum = parseInt(document.getElementById('invNumber').value) || 0;
-    const nextNum = currentNum + 1;
-    localStorage.setItem('loomtech_next_inv_num', nextNum);
+  // --- NUEVAS FUNCIONES DE HISTORIAL ---
+  
+  function saveAndPrint() {
+    // 1. Guardar en el Historial JSON (localStorage)
+    const invData = {
+      id: Date.now(),
+      number: document.getElementById('invNumber').value,
+      date: document.getElementById('invDate').value,
+      typeSelect: document.getElementById('docTypeSelect').value,
+      customType: document.getElementById('customDocType').value,
+      currency: document.getElementById('currencySelect').value,
+      clientName: document.getElementById('clientName').value,
+      clientDetails: document.getElementById('clientDetails').value,
+      obs: document.getElementById('observations').value,
+      items: JSON.parse(JSON.stringify(items)),
+      totalStr: document.getElementById('viewGrandTotal').innerText
+    };
+
+    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
+    history.push(invData);
+    localStorage.setItem('loomtech_history', JSON.stringify(history));
     
-    // Actualizar el campo automáticamente después de unos segundos por si sigue en la pagina
+    // 2. Incrementar número para la próxima factura
+    let nextNum = parseInt(invData.number) + 1;
+    localStorage.setItem('loomtech_next_inv_num', nextNum);
+
+    // 3. Imprimir y actualizar pantalla
+    window.print();
     setTimeout(() => {
-        document.getElementById('invNumber').value = nextNum;
-        updateInvoice();
-    }, 1500);
+      document.getElementById('invNumber').value = nextNum;
+      renderHistory();
+      updateInvoice();
+    }, 1000);
+  }
+
+  function renderHistory() {
+    const tbody = document.getElementById('historyTableBody');
+    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
+    tbody.innerHTML = '';
+    if(history.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding: 20px;">No hay comprobantes guardados aún.</td></tr>'; return;
+    }
+    history.slice().reverse().forEach(inv => {
+      const tipoReal = inv.typeSelect === '__custom__' ? inv.customType : inv.typeSelect;
+      const fechaFormat = inv.date ? inv.date.split('-').reverse().join('/') : '-';
+      const row = `<tr>
+        <td>${String(inv.number).padStart(8,'0')}</td>
+        <td>${fechaFormat}</td>
+        <td>${inv.clientName || 'Consumidor Final'}</td>
+        <td>${tipoReal}</td>
+        <td class="text-right">${inv.currency} ${inv.totalStr}</td>
+        <td class="text-right">
+          <button class="btn-secondary btn-sm" onclick="loadInvoice(${inv.id})">Cargar</button>
+          <button class="btn-secondary btn-sm btn-danger" onclick="deleteInvoice(${inv.id})">Borrar</button>
+        </td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  function loadInvoice(id) {
+    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
+    let inv = history.find(i => i.id === id);
+    if(!inv) return;
+    
+    document.getElementById('invNumber').value = inv.number;
+    document.getElementById('invDate').value = inv.date;
+    document.getElementById('docTypeSelect').value = inv.typeSelect;
+    document.getElementById('customDocType').value = inv.customType || '';
+    handleDocTypeChange();
+    document.getElementById('currencySelect').value = inv.currency;
+    document.getElementById('clientName').value = inv.clientName;
+    document.getElementById('clientDetails').value = inv.clientDetails;
+    document.getElementById('observations').value = inv.obs;
+    items = JSON.parse(JSON.stringify(inv.items));
+    
+    renderFormItems();
+    updateInvoice();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function deleteInvoice(id) {
+    if(!confirm("¿Estás seguro de eliminar este comprobante del historial?")) return;
+    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
+    history = history.filter(i => i.id !== id);
+    localStorage.setItem('loomtech_history', JSON.stringify(history));
+    renderHistory();
+  }
+
+  // --- BACKUP JSON ---
+  function exportHistory() {
+    const data = { next_num: localStorage.getItem('loomtech_next_inv_num'), history: localStorage.getItem('loomtech_history') };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `LoomTech_Historial_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  }
+
+  function importHistory(event) {
+    const file = event.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if(data.next_num) localStorage.setItem('loomtech_next_inv_num', data.next_num);
+        if(data.history) localStorage.setItem('loomtech_history', data.history);
+        init();
+        alert("¡Historial importado con éxito!");
+      } catch(err) { alert("Error al leer el archivo JSON."); }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Resetear input
   }
 
   init();
