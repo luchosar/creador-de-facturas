@@ -303,8 +303,16 @@
       <input type="text" id="customDocType" placeholder="Ej: Nota de Venta" oninput="updateInvoice()">
     </div>
 
-    <label>Fecha de Emisión</label>
-    <input type="date" id="invDate" oninput="updateInvoice()">
+    <div class="grid-2">
+      <div>
+        <label>Número de Comprobante</label>
+        <input type="number" id="invNumber" value="1" min="1" oninput="updateInvoice()">
+      </div>
+      <div>
+        <label>Fecha de Emisión</label>
+        <input type="date" id="invDate" oninput="updateInvoice()">
+      </div>
+    </div>
 
     <label>Nombre del Cliente / Empresa</label>
     <input type="text" id="clientName" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
@@ -319,7 +327,7 @@
     <label>Observaciones / Notas</label>
     <textarea id="observations" rows="2" placeholder="Ej: Validez: 15 días.&#10;Condición: Transferencia bancaria." oninput="updateInvoice()"></textarea>
 
-    <button type="button" class="btn" onclick="window.print()">Imprimir / Guardar en PDF</button>
+    <button type="button" class="btn" onclick="printAndIncrement()">Imprimir / Guardar en PDF</button>
   </div>
 
   <!-- Vista Previa de la Factura -->
@@ -349,6 +357,7 @@
       <!-- Bloque Tipo Doc. -->
       <div class="inv-details-header">
         <h3 id="viewDocType" style="margin: 0; font-size: 1rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
+        <p style="margin: 4px 0 0 0; font-size: 0.95rem; font-weight: bold; color: #0f172a;">N° <span id="viewInvNumber">00000001</span></p>
         <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
         <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: var(--primary);">MONEDA: ARS ($)</p>
       </div>
@@ -393,6 +402,10 @@
   ];
 
   function init() {
+    // Cargar número de factura de localStorage
+    let nextNum = localStorage.getItem('loomtech_next_inv_num') || 1;
+    document.getElementById('invNumber').value = nextNum;
+    
     document.getElementById('invDate').valueAsDate = new Date();
     renderFormItems();
     updateInvoice();
@@ -484,10 +497,22 @@
     document.getElementById('viewGrandTotalSymbol').innerText = symbol;
 
     // 3. Datos de Cliente y Fecha
-    document.getElementById('viewClient').innerText = document.getElementById('clientName').value || 'Consumidor Final';
+    const clientName = document.getElementById('clientName').value || 'Consumidor Final';
+    document.getElementById('viewClient').innerText = clientName;
     document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
     document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
 
+    // Formatear y mostrar número de comprobante (ej: 00000005)
+    const invNumVal = document.getElementById('invNumber').value || 1;
+    const formattedNum = String(invNumVal).padStart(8, '0');
+    document.getElementById('viewInvNumber').innerText = formattedNum;
+    
+    // Cambiar el título del documento para que al guardar el PDF sugiera este nombre
+    // Reemplaza espacios y caracteres no deseados en el título del archivo
+    const safeDocTitle = docTitle.replace(/[^a-zA-Z0-9]/g, '_');
+    const safeClientName = clientName.replace(/[^a-zA-Z0-9]/g, '_');
+    document.title = `${safeDocTitle}_N${formattedNum}_${safeClientName}`;
+    
     const dateVal = document.getElementById('invDate').value;
     document.getElementById('viewDate').innerText = dateVal ? dateVal.split('-').reverse().join('/') : '-';
 
@@ -510,6 +535,20 @@
     });
 
     document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  function printAndIncrement() {
+    window.print();
+    // Al imprimir, guardar el próximo número en el navegador
+    const currentNum = parseInt(document.getElementById('invNumber').value) || 0;
+    const nextNum = currentNum + 1;
+    localStorage.setItem('loomtech_next_inv_num', nextNum);
+    
+    // Actualizar el campo automáticamente después de unos segundos por si sigue en la pagina
+    setTimeout(() => {
+        document.getElementById('invNumber').value = nextNum;
+        updateInvoice();
+    }, 1500);
   }
 
   init();
