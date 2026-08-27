@@ -35,6 +35,7 @@
     .header-logo {
       width: 72px;
       height: 72px;
+      object-fit: contain;
       flex-shrink: 0;
     }
     .header-title h1 {
@@ -142,8 +143,9 @@
       gap: 16px;
     }
     .brand-logo-invoice {
-      width: 64px;
-      height: 64px;
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
       flex-shrink: 0;
     }
     .inv-table {
@@ -163,12 +165,23 @@
       font-weight: 600;
     }
     .text-right { text-align: right !important; }
-    .inv-total {
+    
+    .inv-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       margin-top: 24px;
+      gap: 24px;
+    }
+    .inv-observations {
+      flex: 1;
+    }
+    .inv-total {
       text-align: right;
       font-size: 1.25rem;
       font-weight: 700;
       color: #0f172a;
+      white-space: nowrap;
     }
 
     /* Reglas para imprimir */
@@ -181,35 +194,16 @@
     }
     @media (max-width: 800px) {
       .container { grid-template-columns: 1fr; }
+      .inv-footer { flex-direction: column; }
+      .inv-total { width: 100%; }
     }
   </style>
 </head>
 <body>
 
-<!-- Plantilla reusable del SVG de LoomTech -->
-<svg style="display: none;">
-  <symbol id="loomtech-logo" viewBox="0 0 240 200">
-    <g fill="none" stroke="#3b5bfd" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
-      <!-- Símbolo superior / Pista superior -->
-      <path d="M 125 30 L 195 30 L 165 92 L 105 92" />
-      <path d="M 68 55 L 98 55 L 126 128 L 180 128" />
-      
-      <!-- Símbolo inferior / Pista inferior -->
-      <path d="M 45 168 L 138 168 L 155 142 L 68 142 L 95 62" />
-    </g>
-    <!-- Nodos circulares -->
-    <g fill="white" stroke="#3b5bfd" stroke-width="10">
-      <circle cx="68" cy="55" r="10" />
-      <circle cx="180" cy="55" r="10" />
-      <circle cx="105" cy="92" r="10" />
-      <circle cx="45" cy="168" r="10" />
-    </g>
-  </symbol>
-</svg>
-
 <!-- Encabezado Principal de la Página (Se oculta al imprimir) -->
 <div class="main-header no-print">
-  <svg class="header-logo"><use href="#loomtech-logo"/></svg>
+  <img src="logo-transparente.webp" alt="LoomTech Logo" class="header-logo">
   <div class="header-title">
     <h1>LoomTech</h1>
     <p>Sistema de Emisión de Presupuestos y Comprobantes</p>
@@ -221,18 +215,24 @@
   <div class="panel no-print">
     <h2>Datos de la Factura</h2>
 
-    <label>Cliente</label>
-    <input type="text" id="clientName" placeholder="Nombre / Empresa del cliente" oninput="updateInvoice()">
+    <label>Tipo de Documento</label>
+    <input type="text" id="docType" value="Presupuesto / Comprobante" oninput="updateInvoice()">
 
     <label>Fecha de Emisión</label>
     <input type="date" id="invDate" oninput="updateInvoice()">
 
-    <label>Tipo de Documento</label>
-    <input type="text" id="docType" value="Presupuesto / Comprobante" oninput="updateInvoice()">
+    <label>Nombre del Cliente / Empresa</label>
+    <input type="text" id="clientName" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
+
+    <label>Datos Adicionales del Cliente (CUIT, Dirección, Email)</label>
+    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Córdoba Capital" oninput="updateInvoice()"></textarea>
 
     <label>Ítems y Servicios</label>
     <div id="itemsContainer"></div>
     <button type="button" class="btn btn-secondary" onclick="addItem()">+ Agregar Ítem</button>
+
+    <label>Observaciones / Notas</label>
+    <textarea id="observations" rows="2" placeholder="Ej: Validez del presupuesto: 15 días.&#10;Condiciones de pago: Transferencia bancaria." oninput="updateInvoice()"></textarea>
 
     <button type="button" class="btn" onclick="window.print()">Imprimir / Guardar en PDF</button>
   </div>
@@ -242,7 +242,7 @@
     <div class="inv-header">
       <div class="brand-section">
         <!-- Logo en la Factura -->
-        <svg class="brand-logo-invoice"><use href="#loomtech-logo"/></svg>
+        <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice">
         <div>
           <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
@@ -262,6 +262,7 @@
     <div style="margin-bottom: 22px;">
       <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Receptor / Cliente</strong>
       <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
+      <div id="viewClientDetails" style="font-size: 0.85rem; color: #475569; margin-top: 2px; white-space: pre-line; min-height: 14px;"></div>
     </div>
 
     <table class="inv-table">
@@ -276,8 +277,14 @@
       <tbody id="viewItems"></tbody>
     </table>
 
-    <div class="inv-total">
-      Total: $<span id="viewGrandTotal">0.00</span>
+    <div class="inv-footer">
+      <div class="inv-observations">
+        <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Observaciones:</strong>
+        <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line;">-</p>
+      </div>
+      <div class="inv-total">
+        Total: $<span id="viewGrandTotal">0.00</span>
+      </div>
     </div>
   </div>
 </div>
@@ -329,12 +336,19 @@
   }
 
   function updateInvoice() {
+    // Textos cabecera y cliente
     document.getElementById('viewClient').innerText = document.getElementById('clientName').value || 'Consumidor Final';
+    document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
     document.getElementById('viewDocType').innerText = document.getElementById('docType').value || 'Comprobante';
     
+    // Observaciones
+    document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
+
+    // Fecha
     const dateVal = document.getElementById('invDate').value;
     document.getElementById('viewDate').innerText = dateVal ? dateVal.split('-').reverse().join('/') : '-';
 
+    // Items de la tabla
     const tbody = document.getElementById('viewItems');
     tbody.innerHTML = '';
     let grandTotal = 0;
@@ -359,4 +373,3 @@
 </script>
 </body>
 </html>
-
