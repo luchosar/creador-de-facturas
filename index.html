@@ -49,9 +49,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       height: fit-content;
     }
-    .panel-full {
-      grid-column: 1 / -1;
-    }
+    .panel-full { grid-column: 1 / -1; }
     
     h2 { margin-top: 0; font-size: 1.2rem; color: #0f172a; }
     label { display: block; font-size: 0.82rem; font-weight: 600; margin-top: 14px; margin-bottom: 5px; color: #475569; }
@@ -61,6 +59,7 @@
     input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 91, 253, 0.15); }
     
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
     .flex-between { display: flex; justify-content: space-between; align-items: center; }
     
     .btn { background: var(--primary); color: white; border: none; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95rem; margin-top: 20px; width: 100%; transition: background-color 0.2s; }
@@ -70,13 +69,23 @@
     .btn-sm { padding: 4px 10px; font-size: 0.8rem; margin-left: 4px; }
     .btn-danger { color: #ef4444; }
 
+    /* Switch Modo Rally */
+    .rally-switch-container { display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 12px 16px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; }
+    .rally-switch-container .rally-label { font-weight: 700; color: #1e40af; font-size: 0.9rem; }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
     .item-row { display: grid; grid-template-columns: 3fr 1fr 1.5fr 28px; gap: 8px; margin-bottom: 8px; align-items: center; }
     .remove-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; font-size: 1.2rem; padding: 0; line-height: 1; }
 
     /* Factura */
     #invoice { background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); box-sizing: border-box; border: 1px solid var(--border); }
     .inv-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; position: relative; }
-    .brand-section { display: flex; align-items: center; gap: 16px; max-width: 40%; }
+    .brand-section { display: flex; align-items: center; gap: 16px; max-width: 50%; }
     .brand-logo-invoice { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
     
     .doc-letter-box { position: absolute; left: 50%; transform: translateX(-50%); top: -5px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 64px; height: 64px; border: 2px solid #0f172a; background: white; }
@@ -171,11 +180,39 @@
       </div>
     </div>
 
-    <label>Cliente / Empresa</label>
-    <input type="text" id="clientName" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
+    <label>Cliente / Equipo</label>
+    <input type="text" id="clientName" placeholder="Ej: Juan Pérez / Equipo Competición" oninput="updateInvoice()">
 
-    <label>Datos Adicionales del Cliente</label>
-    <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto" oninput="updateInvoice()"></textarea>
+    <!-- Switch Modo Rally -->
+    <div class="rally-switch-container">
+      <label class="switch">
+        <input type="checkbox" id="rallyModeSwitch" onchange="toggleRallyMode()">
+        <span class="slider"></span>
+      </label>
+      <span class="rally-label">Modo Rally / Competición</span>
+    </div>
+
+    <!-- Detalles estándar -->
+    <div id="standardClientDetails">
+      <label style="margin-top:0;">Datos Adicionales del Cliente</label>
+      <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto" oninput="updateInvoice()"></textarea>
+    </div>
+
+    <!-- Detalles Rally -->
+    <div id="rallyClientDetails" class="grid-3" style="display: none;">
+      <div>
+        <label style="margin-top:0;">Categoría</label>
+        <input type="text" id="rallyCategory" placeholder="Ej: N4" oninput="updateInvoice()">
+      </div>
+      <div>
+        <label style="margin-top:0;">Modelo</label>
+        <input type="text" id="rallyModel" placeholder="Ej: Ford Fiesta" oninput="updateInvoice()">
+      </div>
+      <div>
+        <label style="margin-top:0;">Piloto</label>
+        <input type="text" id="rallyPilot" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
+      </div>
+    </div>
 
     <label>Ítems y Servicios</label>
     <div id="itemsContainer"></div>
@@ -195,10 +232,10 @@
         <div>
           <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
-            Razón Social: LoomTech S.A.<br>
-            CUIT: 30-XXXXXXXX-X<br>
-            Condición IVA: Responsable Inscripto<br>
-            Córdoba, Argentina | +54 351 376-4531
+            Razón Social: <strong>Leonardo Sargiotti</strong><br>
+            CUIL: 20-27543260-2<br>
+            Córdoba, Argentina | +54 351 376-4531<br>
+            Loomtechargentina@gmail.com
           </p>
         </div>
       </div>
@@ -264,7 +301,7 @@
         <tr>
           <th>N° Doc</th>
           <th>Fecha</th>
-          <th>Cliente</th>
+          <th>Cliente / Piloto</th>
           <th>Tipo</th>
           <th class="text-right">Total</th>
           <th class="text-right">Acciones</th>
@@ -285,13 +322,20 @@
     document.getElementById('invNumber').value = localStorage.getItem('loomtech_next_inv_num') || 1;
     document.getElementById('invDate').valueAsDate = new Date();
     renderFormItems();
-    updateInvoice();
+    toggleRallyMode();
     renderHistory();
   }
 
   function handleDocTypeChange() {
     document.getElementById('customDocTypeContainer').style.display = 
       document.getElementById('docTypeSelect').value === '__custom__' ? 'block' : 'none';
+    updateInvoice();
+  }
+
+  function toggleRallyMode() {
+    const isRally = document.getElementById('rallyModeSwitch').checked;
+    document.getElementById('standardClientDetails').style.display = isRally ? 'none' : 'block';
+    document.getElementById('rallyClientDetails').style.display = isRally ? 'grid' : 'none';
     updateInvoice();
   }
 
@@ -336,9 +380,24 @@
     document.getElementById('viewTotalCurrencyLabel').innerText = isUSD ? 'Total USD' : 'Total ARS';
     document.getElementById('viewGrandTotalSymbol').innerText = sym;
 
+    // Datos del Cliente (Estándar o Rally)
     const cName = document.getElementById('clientName').value || 'Consumidor Final';
     document.getElementById('viewClient').innerText = cName;
-    document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
+
+    const isRally = document.getElementById('rallyModeSwitch').checked;
+    if (isRally) {
+      const cat = document.getElementById('rallyCategory').value;
+      const mod = document.getElementById('rallyModel').value;
+      const pil = document.getElementById('rallyPilot').value;
+      let rallyData = [];
+      if (cat) rallyData.push(`Categoría: ${cat}`);
+      if (mod) rallyData.push(`Modelo: ${mod}`);
+      if (pil) rallyData.push(`Piloto: ${pil}`);
+      document.getElementById('viewClientDetails').innerText = rallyData.join(' | ');
+    } else {
+      document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
+    }
+
     document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
     document.getElementById('viewInvNumber').innerText = String(document.getElementById('invNumber').value || 1).padStart(8, '0');
     
@@ -354,11 +413,10 @@
     });
     document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
-
-  // --- NUEVAS FUNCIONES DE HISTORIAL ---
   
   function saveAndPrint() {
-    // 1. Guardar en el Historial JSON (localStorage)
+    const isRally = document.getElementById('rallyModeSwitch').checked;
+    
     const invData = {
       id: Date.now(),
       number: document.getElementById('invNumber').value,
@@ -367,7 +425,11 @@
       customType: document.getElementById('customDocType').value,
       currency: document.getElementById('currencySelect').value,
       clientName: document.getElementById('clientName').value,
+      isRally: isRally,
       clientDetails: document.getElementById('clientDetails').value,
+      rallyCategory: document.getElementById('rallyCategory').value,
+      rallyModel: document.getElementById('rallyModel').value,
+      rallyPilot: document.getElementById('rallyPilot').value,
       obs: document.getElementById('observations').value,
       items: JSON.parse(JSON.stringify(items)),
       totalStr: document.getElementById('viewGrandTotal').innerText
@@ -377,11 +439,9 @@
     history.push(invData);
     localStorage.setItem('loomtech_history', JSON.stringify(history));
     
-    // 2. Incrementar número para la próxima factura
     let nextNum = parseInt(invData.number) + 1;
     localStorage.setItem('loomtech_next_inv_num', nextNum);
 
-    // 3. Imprimir y actualizar pantalla
     window.print();
     setTimeout(() => {
       document.getElementById('invNumber').value = nextNum;
@@ -400,10 +460,14 @@
     history.slice().reverse().forEach(inv => {
       const tipoReal = inv.typeSelect === '__custom__' ? inv.customType : inv.typeSelect;
       const fechaFormat = inv.date ? inv.date.split('-').reverse().join('/') : '-';
+      
+      // Mostrar piloto si es rally, sino el nombre del cliente
+      const displayClient = inv.isRally && inv.rallyPilot ? `${inv.clientName} (Piloto: ${inv.rallyPilot})` : (inv.clientName || 'Consumidor Final');
+
       const row = `<tr>
         <td>${String(inv.number).padStart(8,'0')}</td>
         <td>${fechaFormat}</td>
-        <td>${inv.clientName || 'Consumidor Final'}</td>
+        <td>${displayClient}</td>
         <td>${tipoReal}</td>
         <td class="text-right">${inv.currency} ${inv.totalStr}</td>
         <td class="text-right">
@@ -427,7 +491,15 @@
     handleDocTypeChange();
     document.getElementById('currencySelect').value = inv.currency;
     document.getElementById('clientName').value = inv.clientName;
-    document.getElementById('clientDetails').value = inv.clientDetails;
+    
+    // Cargar datos del switch Rally
+    document.getElementById('rallyModeSwitch').checked = inv.isRally || false;
+    document.getElementById('clientDetails').value = inv.clientDetails || '';
+    document.getElementById('rallyCategory').value = inv.rallyCategory || '';
+    document.getElementById('rallyModel').value = inv.rallyModel || '';
+    document.getElementById('rallyPilot').value = inv.rallyPilot || '';
+    toggleRallyMode(); // Actualiza la visibilidad de los campos
+
     document.getElementById('observations').value = inv.obs;
     items = JSON.parse(JSON.stringify(inv.items));
     
@@ -444,7 +516,6 @@
     renderHistory();
   }
 
-  // --- BACKUP JSON ---
   function exportHistory() {
     const data = { next_num: localStorage.getItem('loomtech_next_inv_num'), history: localStorage.getItem('loomtech_history') };
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -467,7 +538,7 @@
       } catch(err) { alert("Error al leer el archivo JSON."); }
     };
     reader.readAsText(file);
-    event.target.value = ''; // Resetear input
+    event.target.value = '';
   }
 
   init();
