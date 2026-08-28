@@ -329,17 +329,18 @@
   </div>
 
   <!-- Vista Previa de Factura -->
-  <div id="invoice">
+  <div id="invoice" style="background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 255mm; box-sizing: border-box;">
     
-    <div class="inv-header">
+    <!-- ENCABEZADO: Forzado horizontalmente izquierda-derecha -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; width: 100%;">
       
       <!-- Izquierda: Logo y Empresa -->
-      <div class="brand-section">
-        <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice" onerror="this.style.display='none'">
+      <div style="display: flex; align-items: center; gap: 16px; text-align: left; max-width: 60%;">
+        <img src="logo-transparente.webp" alt="LoomTech" style="width: 100px; height: 100px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
         <div>
-          <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
-          <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
-            Razón Social: <strong>Leonardo Sargiotti</strong><br>
+          <h1 style="margin: 0; font-size: 1.4rem; color: #3b5bfd;">LoomTech</h1>
+          <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; line-height: 1.4;">
+            Razón Social: <strong>Sargiotti Leonardo</strong><br>
             CUIL: 20-27543260-2<br>
             Córdoba, Argentina | +54 351 376-4531<br>
             Loomtechargentina@gmail.com
@@ -348,53 +349,58 @@
       </div>
 
       <!-- Centro Flotante: Cuadro Letra AFIP -->
-      <div class="doc-letter-box" id="viewDocLetterBox" style="display: none;">
-        <div class="doc-letter" id="viewDocLetter">C</div>
-        <div class="doc-code" id="viewDocCode">Cod. 011</div>
+      <div id="viewDocLetterBox" style="display: none; position: absolute; left: 50%; transform: translateX(-50%); top: -5px; flex-direction: column; align-items: center; justify-content: center; width: 64px; height: 64px; border: 2px solid #0f172a; background: white;">
+        <div id="viewDocLetter" style="font-size: 2.2rem; font-weight: 900; color: #0f172a; line-height: 1;">C</div>
+        <div id="viewDocCode" style="font-size: 0.6rem; font-weight: 700; color: #0f172a; margin-top: 3px;">Cod. 011</div>
       </div>
 
       <!-- Derecha: Datos del Recibo -->
-      <div class="inv-details-header">
+      <div style="text-align: right; min-width: 180px;">
         <h3 id="viewDocType" style="margin: 0; font-size: 1.05rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
         <p style="margin: 4px 0 0 0; font-size: 1rem; font-weight: bold; color: #0f172a;">N° <span id="viewInvNumber">00000001</span></p>
-        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
-        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: var(--primary);">MONEDA: ARS ($)</p>
+        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: #64748b;">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
+        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: #3b5bfd;">MONEDA: ARS ($)</p>
       </div>
     </div>
 
     <!-- CUERPO DEL COMPROBANTE -->
-    <div class="inv-content">
-      <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid var(--border);">
-        <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Receptor / Cliente</strong>
+    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+      <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+        <strong style="font-size: 0.78rem; color: #64748b; text-transform: uppercase;">Receptor / Cliente</strong>
         <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
         <div id="viewClientDetails" style="font-size: 0.85rem; color: #475569; margin-top: 2px; white-space: pre-line; min-height: 14px;"></div>
       </div>
 
-      <table class="inv-table">
+      <table class="inv-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <thead>
           <tr>
-            <th>Descripción</th>
-            <th class="text-right">Cant.</th>
-            <th class="text-right">Unitario (<span class="col-curr-symbol">$</span>)</th>
-            <th class="text-right">Total (<span class="col-curr-symbol">$</span>)</th>
+            <th style="padding: 10px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Descripción</th>
+            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Cant.</th>
+            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Unitario (<span class="col-curr-symbol">$</span>)</th>
+            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Total (<span class="col-curr-symbol">$</span>)</th>
           </tr>
         </thead>
         <tbody id="viewItems"></tbody>
       </table>
     </div>
 
-    <!-- FOOTER AL MARGEN INFERIOR -->
-    <div class="inv-footer">
-      <div class="inv-observations">
-        <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Observaciones:</strong>
+    <!-- FOOTER AL MARGEN INFERIOR (Forzado en los extremos) -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 40px; width: 100%;">
+      
+      <!-- Izquierda: Observaciones -->
+      <div style="text-align: left; max-width: 65%;">
+        <strong style="font-size: 0.78rem; color: #64748b; text-transform: uppercase;">Observaciones:</strong>
         <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line; margin-bottom: 0;">-</p>
       </div>
-      <div class="inv-total-container">
-        <div class="inv-currency-label" id="viewTotalCurrencyLabel">Total ARS</div>
-        <div class="inv-total">
+      
+      <!-- Derecha: Total -->
+      <div style="text-align: right; white-space: nowrap;">
+        <div id="viewTotalCurrencyLabel" style="font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Total ARS</div>
+        <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 2px;">
           <span id="viewGrandTotalSymbol">$</span> <span id="viewGrandTotal">0.00</span>
         </div>
       </div>
+
     </div>
   </div>
 
