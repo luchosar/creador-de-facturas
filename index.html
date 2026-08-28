@@ -327,25 +327,43 @@
 
     <button type="button" class="btn" onclick="saveAndPrint()">Imprimir y Guardar en Historial</button>
   </div>
-
-  <!-- Vista Previa de Factura -->
-  <div id="invoice" style="background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 255mm; box-sizing: border-box;">
+  
+   <!-- Vista Previa de Factura con Marca de Agua -->
+  <div id="invoice" style="background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 255mm; box-sizing: border-box; position: relative; overflow: hidden;">
     
+    <!-- MARCA DE AGUA EN EL FONDO (Logo SVG traslúcido) -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 78%; max-width: 520px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; justify-content: center; align-items: center;">
+      <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+        <!-- Pistas del Circuito Superior -->
+        <path d="M 252 82 L 268 46 L 152 46 L 244 142 L 116 142 L 138 110" stroke="#3f56fb" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Pistas del Circuito Inferior -->
+        <path d="M 78 82 L 114 82 L 56 178 L 188 178 L 168 238 L 48 238" stroke="#3f56fb" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+        
+        <!-- Nodos Circulares Superiores -->
+        <circle cx="252" cy="82" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
+        <circle cx="138" cy="110" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
+        
+        <!-- Nodos Circulares Inferiores -->
+        <circle cx="78" cy="82" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
+        <circle cx="48" cy="238" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
+      </svg>
+    </div>
+
     <!-- ENCABEZADO: Forzado horizontalmente izquierda-derecha -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; width: 100%; z-index: 1;">
       
       <!-- Izquierda: Logo y Empresa -->
       <div style="display: flex; align-items: center; gap: 16px; text-align: left; max-width: 60%;">
+        <img src="logo-transparente.webp" alt="LoomTech" style="width: 90px; height: 90px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
         <div>
-          <h1 style="margin: 0; font-size: 1.4rem; color: #3b5bfd;">LoomTech</h1>
+          <h1 style="margin: 0; font-size: 1.4rem; color: #3f56fb;">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; line-height: 1.4;">
-            Razón Social: <strong>Sargiotti Leonardo</strong><br>
+            Razón Social: <strong>Leonardo Sargiotti</strong><br>
             CUIL: 20-27543260-2<br>
             Córdoba, Argentina | +54 351 376-4531<br>
             Loomtechargentina@gmail.com
           </p>
         </div>
-        <img src="logo-transparente.webp" alt="LoomTech" style="width: 100px; height: 100px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
       </div>
 
       <!-- Centro Flotante: Cuadro Letra AFIP -->
@@ -359,12 +377,12 @@
         <h3 id="viewDocType" style="margin: 0; font-size: 1.05rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
         <p style="margin: 4px 0 0 0; font-size: 1rem; font-weight: bold; color: #0f172a;">N° <span id="viewInvNumber">00000001</span></p>
         <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: #64748b;">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
-        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: #3b5bfd;">MONEDA: ARS ($)</p>
+        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: #3f56fb;">MONEDA: ARS ($)</p>
       </div>
     </div>
 
     <!-- CUERPO DEL COMPROBANTE -->
-    <div style="flex-grow: 1; display: flex; flex-direction: column;">
+    <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 1;">
       <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
         <strong style="font-size: 0.78rem; color: #64748b; text-transform: uppercase;">Receptor / Cliente</strong>
         <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
@@ -384,8 +402,8 @@
       </table>
     </div>
 
-    <!-- FOOTER AL MARGEN INFERIOR (Forzado en los extremos) -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 40px; width: 100%;">
+    <!-- FOOTER AL MARGEN INFERIOR (Extremos alineados) -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 40px; width: 100%; position: relative; z-index: 1;">
       
       <!-- Izquierda: Observaciones -->
       <div style="text-align: left; max-width: 65%;">
@@ -403,7 +421,6 @@
 
     </div>
   </div>
-
   <!-- Panel de Historial -->
   <div class="panel panel-full no-print">
     <div class="flex-between">
