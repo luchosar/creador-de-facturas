@@ -91,27 +91,46 @@
       box-sizing: border-box; 
       border: 1px solid var(--border); 
       
-      /* Flexbox para empujar el pie de página hacia abajo */
+      /* Flexbox fundamental para la hoja entera */
       display: flex;
       flex-direction: column;
-      min-height: 250mm; 
+      min-height: 270mm; /* Simula alto de hoja A4 forzando el pie hacia abajo */
     }
     
     .inv-header { 
-      display: grid; 
-      grid-template-columns: 1fr auto 1fr; 
+      display: flex; 
+      justify-content: space-between; 
       align-items: flex-start; 
       border-bottom: 2px solid var(--border); 
-      padding-bottom: 24px; 
-      margin-bottom: 20px; 
+      padding-bottom: 20px; 
+      margin-bottom: 20px;
+      position: relative; 
     }
 
-    /* Columna 1: Cuadro de Letra */
-    .doc-letter-container {
-      display: flex;
-      justify-content: flex-start;
+    /* Columna Izquierda: Logo y Empresa */
+    .brand-section { 
+      display: flex; 
+      align-items: center; 
+      gap: 16px; 
+      max-width: 55%; 
+      text-align: left;
     }
+    .brand-logo-invoice { 
+      width: 100px; 
+      height: 100px; 
+      object-fit: contain; 
+      flex-shrink: 0;
+    }
+    
+    /* Columna Derecha: Datos del Recibo */
+    .inv-details-header { text-align: right; max-width: 40%; }
+
+    /* Centro Flotante: Cuadro de Letra */
     .doc-letter-box { 
+      position: absolute; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      top: -5px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
@@ -123,41 +142,31 @@
     }
     .doc-letter { font-size: 2.2rem; font-weight: 900; color: #0f172a; line-height: 1; }
     .doc-code { font-size: 0.6rem; font-weight: 700; color: #0f172a; margin-top: 3px; }
-
-    /* Columna 2: Logo y Empresa al centro */
-    .brand-section { 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      text-align: center;
-      gap: 12px; 
-    }
-    .brand-logo-invoice { 
-      width: 110px; /* Logo más grande */
-      height: 110px; 
-      object-fit: contain; 
-    }
     
-    /* Columna 3: Datos de recibo a la derecha */
-    .inv-details-header { text-align: right; }
-    
-    /* Contenido central que ocupa el espacio libre para empujar el footer */
-    .inv-content { flex-grow: 1; }
+    /* Contenido central que absorbe el espacio vacío */
+    .inv-content { flex-grow: 1; display: flex; flex-direction: column; }
 
     .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     .inv-table th, .inv-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
     .inv-table th { background: #f8fafc; color: #475569; font-weight: 600; }
     .text-right { text-align: right !important; }
     
-    /* Footer anclado abajo (Observaciones y Total) */
+    /* Footer anclado estrictamente abajo */
     .inv-footer { 
       display: flex; 
       justify-content: space-between; 
-      align-items: flex-end; /* Alineados al fondo */
-      margin-top: 40px; 
-      gap: 24px; 
+      align-items: flex-end; /* Alineados perfectamente al borde inferior */
+      margin-top: auto; /* Empuja el footer al fondo de la hoja */
+      padding-top: 30px; 
     }
-    .inv-observations { flex: 1; max-width: 60%; }
+    .inv-observations { 
+      flex: 1; 
+      max-width: 60%; 
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end; /* Texto abajo */
+    }
+    .inv-observations p { margin-bottom: 0; } /* Reseteo para alineación perfecta */
     .inv-total-container { text-align: right; white-space: nowrap; }
     .inv-currency-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .inv-total { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 2px; }
@@ -167,15 +176,16 @@
       body { background: white; padding: 0; }
       .no-print { display: none !important; }
       .container { display: block; max-width: 100%; }
-      #invoice { box-shadow: none; border: none; padding: 0; min-height: 250mm; }
+      #invoice { box-shadow: none; border: none; padding: 0; min-height: 270mm; }
       @page { size: A4; margin: 15mm; }
     }
 
-    /* Diseño responsivo para pantallas pequeñas (evita que se rompa en celulares) */
+    /* Celulares y tablets pequeñas */
     @media (max-width: 800px) {
       .container { grid-template-columns: 1fr; }
-      .inv-header { grid-template-columns: 1fr; gap: 20px; text-align: center; }
-      .inv-details-header, .doc-letter-container { text-align: center; justify-content: center; }
+      .inv-header { flex-direction: column; gap: 20px; text-align: center; align-items: center; }
+      .brand-section, .inv-details-header { max-width: 100%; text-align: center; flex-direction: column; }
+      .doc-letter-box { position: relative; left: auto; transform: none; margin: 0 auto; top: auto; }
       .inv-footer { flex-direction: column; align-items: flex-start; }
       .inv-observations { max-width: 100%; margin-bottom: 20px; }
       .inv-total-container { width: 100%; text-align: right; }
@@ -287,29 +297,26 @@
   <!-- Vista Previa de Factura -->
   <div id="invoice">
     
-    <!-- ENCABEZADO GRID 3 COLUMNAS -->
     <div class="inv-header">
       
-      <!-- Izquierda: Cuadro Letra AFIP -->
-      <div class="doc-letter-container">
-        <div class="doc-letter-box" id="viewDocLetterBox" style="display: none;">
-          <div class="doc-letter" id="viewDocLetter">C</div>
-          <div class="doc-code" id="viewDocCode">Cod. 011</div>
-        </div>
-      </div>
-
-      <!-- Centro: Logo y Empresa -->
+      <!-- Izquierda: Logo y Empresa -->
       <div class="brand-section">
         <img src="logo-transparente.webp" alt="LoomTech Logo" class="brand-logo-invoice" onerror="this.style.display='none'">
         <div>
           <h1 style="margin: 0; font-size: 1.4rem; color: var(--primary);">LoomTech</h1>
           <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
-            Razón Social: <strong>Sargiotti Leonardo</strong><br>
+            Razón Social: <strong>Leonardo Sargiotti</strong><br>
             CUIL: 20-27543260-2<br>
             Córdoba, Argentina | +54 351 376-4531<br>
             Loomtechargentina@gmail.com
           </p>
         </div>
+      </div>
+
+      <!-- Centro Flotante: Cuadro Letra AFIP -->
+      <div class="doc-letter-box" id="viewDocLetterBox" style="display: none;">
+        <div class="doc-letter" id="viewDocLetter">C</div>
+        <div class="doc-code" id="viewDocCode">Cod. 011</div>
       </div>
 
       <!-- Derecha: Datos del Recibo -->
@@ -321,7 +328,7 @@
       </div>
     </div>
 
-    <!-- CUERPO DEL COMPROBANTE (Empuja el footer abajo) -->
+    <!-- CUERPO DEL COMPROBANTE -->
     <div class="inv-content">
       <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid var(--border);">
         <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Receptor / Cliente</strong>
@@ -346,7 +353,7 @@
     <div class="inv-footer">
       <div class="inv-observations">
         <strong style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Observaciones:</strong>
-        <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line;">-</p>
+        <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line; margin-bottom: 0;">-</p>
       </div>
       <div class="inv-total-container">
         <div class="inv-currency-label" id="viewTotalCurrencyLabel">Total ARS</div>
@@ -380,7 +387,6 @@
         </tr>
       </thead>
       <tbody id="historyTableBody">
-        <!-- Rellenado por JS -->
       </tbody>
     </table>
   </div>
