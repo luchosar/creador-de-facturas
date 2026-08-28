@@ -98,9 +98,9 @@
     }
     
     .inv-header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: flex-start; 
+      display: grid; 
+      grid-template-columns: 1fr auto; /* Dos columnas: Izquierda (Logo+Datos) y Derecha (Info Doc) */
+      align-items: start;
       border-bottom: 2px solid var(--border); 
       padding-bottom: 20px; 
       margin-bottom: 20px;
@@ -112,18 +112,22 @@
       display: flex; 
       align-items: center; 
       gap: 16px; 
-      max-width: 55%; 
       text-align: left;
     }
+    
     .brand-logo-invoice { 
       width: 100px; 
       height: 100px; 
       object-fit: contain; 
       flex-shrink: 0;
+      /* Se asegura de que no este centrado por accidente */
+      margin: 0;
     }
     
     /* Columna Derecha: Datos del Recibo */
-    .inv-details-header { text-align: right; max-width: 40%; }
+    .inv-details-header { 
+        text-align: right; 
+    }
 
     /* Centro Flotante: Cuadro de Letra */
     .doc-letter-box { 
@@ -171,20 +175,50 @@
     .inv-currency-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .inv-total { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 2px; }
 
-    /* Modo Impresión */
+    /* Fix especifico para WeasyPrint / Impresion PDF para mantener el footer al fondo */
     @media print {
-      body { background: white; padding: 0; }
+      body { background: white; padding: 0; margin: 0;}
       .no-print { display: none !important; }
-      .container { display: block; max-width: 100%; }
-      #invoice { box-shadow: none; border: none; padding: 0; min-height: 270mm; }
-      @page { size: A4; margin: 15mm; }
+      .container { display: block; max-width: 100%; margin: 0; padding:0; }
+      
+      #invoice { 
+          box-shadow: none; 
+          border: none; 
+          padding: 0; 
+          
+          /* En impresion, usamos height 100% de la pagina para forzar el flexbox */
+          height: 100%;
+          min-height: unset;
+      }
+      
+      /* Forzar que el pie se quede abajo en la pagina impresa */
+      .inv-content {
+          height: auto;
+      }
+      
+      .inv-footer {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding-bottom: 0;
+      }
+      
+      @page { 
+          size: A4; 
+          margin: 15mm; 
+      }
     }
 
     /* Celulares y tablets pequeñas */
     @media (max-width: 800px) {
       .container { grid-template-columns: 1fr; }
-      .inv-header { flex-direction: column; gap: 20px; text-align: center; align-items: center; }
-      .brand-section, .inv-details-header { max-width: 100%; text-align: center; flex-direction: column; }
+      
+      /* En movil, apilar para que sea leible, pero volver al formato en impresion */
+      .inv-header { display: flex; flex-direction: column; gap: 20px; text-align: center; align-items: center; }
+      .brand-section { max-width: 100%; text-align: center; flex-direction: column; }
+      .inv-details-header { max-width: 100%; text-align: center; }
+      
       .doc-letter-box { position: relative; left: auto; transform: none; margin: 0 auto; top: auto; }
       .inv-footer { flex-direction: column; align-items: flex-start; }
       .inv-observations { max-width: 100%; margin-bottom: 20px; }
