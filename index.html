@@ -1,678 +1,1440 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LoomTech - Generador de Comprobantes</title>
-  <style>
-    :root {
-      --primary: #3b5bfd;
-      --primary-dark: #2546e0;
-      --border: #e2e8f0;
-      --text: #1e293b;
-      --text-muted: #64748b;
-    }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 24px;
-      background: #f8fafc;
-      color: var(--text);
-    }
-    
-    .main-header {
-      max-width: 960px;
-      margin: 0 auto 24px auto;
-      background: white;
-      padding: 20px 28px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .header-logo { width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; }
-    .header-title h1 { margin: 0; font-size: 1.6rem; color: var(--primary); letter-spacing: -0.5px; }
-    .header-title p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.9rem; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vale la pena — Snacks saludables en Córdoba</title>
+<meta name="description" content="Snacks saludables hechos con ingredientes reales. Barritas de granola artesanales, entrega dentro del anillo de circunvalación en Córdoba.">
 
-    .container {
-      max-width: 960px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 24px;
-    }
-    .panel {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      height: fit-content;
-    }
-    .panel-full { grid-column: 1 / -1; }
-    
-    h2 { margin-top: 0; font-size: 1.2rem; color: #0f172a; }
-    label { display: block; font-size: 0.82rem; font-weight: 600; margin-top: 14px; margin-bottom: 5px; color: #475569; }
-    input, textarea, select {
-      width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 0.9rem; color: var(--text); background: white;
-    }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 91, 253, 0.15); }
-    
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .flex-between { display: flex; justify-content: space-between; align-items: center; }
-    
-    .btn { background: var(--primary); color: white; border: none; padding: 12px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.95rem; margin-top: 20px; width: 100%; transition: background-color 0.2s; }
-    .btn:hover { background: var(--primary-dark); }
-    .btn-secondary { background: #f1f5f9; color: #334155; border: 1px solid var(--border); padding: 8px 12px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; }
-    .btn-secondary:hover { background: #e2e8f0; }
-    .btn-sm { padding: 4px 10px; font-size: 0.8rem; margin-left: 4px; }
-    .btn-danger { color: #ef4444; }
+<!--
+  ============================================================
+  GUÍA RÁPIDA PARA EDITAR ESTA PÁGINA (no hace falta saber programar)
+  ============================================================
+  1) FOTOS: subí las fotos de los productos en la MISMA carpeta que
+     este archivo (sin subcarpetas), con estos nombres exactos:
+       - barrita-simple.jpg
+       - barrita-chocolate.jpg
+       - barrita-limon.jpg
+     Si el nombre coincide, la foto aparece sola. Si falta,
+     se muestra un ícono de reemplazo, así nunca se rompe la página.
 
-    /* Switch Modo Rally */
-    .rally-switch-container { display: flex; align-items: center; gap: 12px; margin: 16px 0; padding: 12px 16px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe; }
-    .rally-switch-container .rally-label { font-weight: 700; color: #1e40af; font-size: 0.9rem; }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-    input:checked + .slider { background-color: var(--primary); }
-    input:checked + .slider:before { transform: translateX(20px); }
+  2) PRODUCTOS NUEVOS: buscá "LISTA DE PRODUCTOS" más abajo en el
+     código (dentro de la etiqueta <script>) y copiá un bloque
+     como el de las barritas, cambiando id, nombre, precio y tags.
 
-    .item-row { display: grid; grid-template-columns: 3fr 1fr 1.5fr 28px; gap: 8px; margin-bottom: 8px; align-items: center; }
-    .remove-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-weight: bold; font-size: 1.2rem; padding: 0; line-height: 1; }
+  3) MODELO 3D: hay un solo modelo 3D en toda la página, el que
+     flota en el sello circular del encabezado (hero). Va en la
+     misma carpeta que este archivo, buscá "producto.glb" más abajo.
 
-    /* --- FACTURA ESTRUCTURA --- */
-    #invoice { 
-      background: white; 
-      padding: 36px; 
-      border-radius: 12px; 
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
-      box-sizing: border-box; 
-      border: 1px solid var(--border); 
-      
-      /* Flexbox fundamental para la hoja entera */
-      display: flex;
-      flex-direction: column;
-      min-height: 270mm; /* Simula alto de hoja A4 forzando el pie hacia abajo */
-    }
-    
-    .inv-header { 
-      display: grid; 
-      grid-template-columns: 1fr auto; /* Dos columnas: Izquierda (Logo+Datos) y Derecha (Info Doc) */
-      align-items: start;
-      border-bottom: 2px solid var(--border); 
-      padding-bottom: 20px; 
-      margin-bottom: 20px;
-      position: relative; 
-    }
+  4) HORARIOS Y ZONA: buscá "EDITAR HORARIO" y "EDITAR ZONA".
 
-    /* Columna Izquierda: Logo y Empresa */
-    .brand-section { 
-      display: flex; 
-      align-items: center; 
-      gap: 16px; 
-      text-align: left;
-    }
-    
-    .brand-logo-invoice { 
-      width: 100px; 
-      height: 100px; 
-      object-fit: contain; 
-      flex-shrink: 0;
-      /* Se asegura de que no este centrado por accidente */
-      margin: 0;
-    }
-    
-    /* Columna Derecha: Datos del Recibo */
-    .inv-details-header { 
-        text-align: right; 
-    }
+  5) LOGO: subí tu logo a la misma carpeta, con el nombre "logo.png"
+     (o .svg, cambiando la extensión en el <img> del header).
+  ============================================================
+-->
 
-    /* Centro Flotante: Cuadro de Letra */
-    .doc-letter-box { 
-      position: absolute; 
-      left: 50%; 
-      transform: translateX(-50%); 
-      top: -5px; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; 
-      width: 64px; 
-      height: 64px; 
-      border: 2px solid #0f172a; 
-      background: white; 
-    }
-    .doc-letter { font-size: 2.2rem; font-weight: 900; color: #0f172a; line-height: 1; }
-    .doc-code { font-size: 0.6rem; font-weight: 700; color: #0f172a; margin-top: 3px; }
-    
-    /* Contenido central que absorbe el espacio vacío */
-    .inv-content { flex-grow: 1; display: flex; flex-direction: column; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .inv-table th, .inv-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
-    .inv-table th { background: #f8fafc; color: #475569; font-weight: 600; }
-    .text-right { text-align: right !important; }
-    
-    /* Footer anclado estrictamente abajo */
-    .inv-footer { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: flex-end; /* Alineados perfectamente al borde inferior */
-      margin-top: auto; /* Empuja el footer al fondo de la hoja */
-      padding-top: 30px; 
-    }
-    .inv-observations { 
-      flex: 1; 
-      max-width: 60%; 
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end; /* Texto abajo */
-    }
-    .inv-observations p { margin-bottom: 0; } /* Reseteo para alineación perfecta */
-    .inv-total-container { text-align: right; white-space: nowrap; }
-    .inv-currency-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-    .inv-total { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 2px; }
+<style>
+  :root{
+    --cream:        #FAF3E6;
+    --cream-2:      #FFFDF8;
+    --kraft:        #E9D9BC;
+    --kraft-dark:   #D8C29C;
+    --espresso:     #2B1D12;
+    --espresso-70:  #2B1D12b3;
+    --terracotta:   #C1652F;
+    --terracotta-d: #A24E22;
+    --honey:        #E3A857;
+    --sage:         #5B7A5A;
+    --sage-d:       #445E44;
+    --line:         #2B1D1226;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 8px;
+    --shadow-card: 0 10px 30px -12px rgba(43,29,18,0.25);
+  }
 
-    /* Fix especifico para WeasyPrint / Impresion PDF para mantener el footer al fondo */
-    @media print {
-      body { background: white; padding: 0; margin: 0;}
-      .no-print { display: none !important; }
-      .container { display: block; max-width: 100%; margin: 0; padding:0; }
-      
-      #invoice { 
-          box-shadow: none; 
-          border: none; 
-          padding: 0; 
-          
-          /* En impresion, usamos height 100% de la pagina para forzar el flexbox */
-          height: 100%;
-          min-height: unset;
-      }
-      
-      /* Forzar que el pie se quede abajo en la pagina impresa */
-      .inv-content {
-          height: auto;
-      }
-      
-      .inv-footer {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding-bottom: 0;
-      }
-      
-      @page { 
-          size: A4; 
-          margin: 15mm; 
-      }
-    }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
 
-    /* Celulares y tablets pequeñas */
-    @media (max-width: 800px) {
-      .container { grid-template-columns: 1fr; }
-      
-      /* En movil, apilar para que sea leible, pero volver al formato en impresion */
-      .inv-header { display: flex; flex-direction: column; gap: 20px; text-align: center; align-items: center; }
-      .brand-section { max-width: 100%; text-align: center; flex-direction: column; }
-      .inv-details-header { max-width: 100%; text-align: center; }
-      
-      .doc-letter-box { position: relative; left: auto; transform: none; margin: 0 auto; top: auto; }
-      .inv-footer { flex-direction: column; align-items: flex-start; }
-      .inv-observations { max-width: 100%; margin-bottom: 20px; }
-      .inv-total-container { width: 100%; text-align: right; }
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--espresso);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    margin:0;
+    color:var(--espresso);
+    letter-spacing:-0.01em;
+  }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+  img{ max-width:100%; display:block; }
+
+  .wrap{
+    max-width:1140px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--terracotta-d);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:18px; height:1px;
+    background:var(--terracotta-d);
+    display:inline-block;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--cream-2);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 24px;
+    max-width:1140px;
+    margin:0 auto;
+  }
+  .logo-wrap{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+  }
+  .logo-img{
+    height:42px;
+    width:auto;
+  }
+  .logo{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:22px;
+    font-style:italic;
+    letter-spacing:-0.01em;
+    align-items:center;
+    gap:0;
+  }
+  .logo span{ color:var(--terracotta); }
+  .nav-links{
+    display:flex;
+    gap:32px;
+    list-style:none;
+    margin:0; padding:0;
+    font-size:15px;
+    font-weight:500;
+  }
+  .nav-links li{
+    display:flex;
+    align-items:center;
+  }
+  .nav-links a{
+    text-decoration:none;
+    padding-bottom:4px;
+    border-bottom:1px solid transparent;
+    transition:border-color .2s ease;
+    line-height:1;
+  }
+  .nav-links a:hover{ border-color:var(--terracotta); }
+  /* .nav-cta is a pill button, not an underlined text link — it needs its
+     own vertical rhythm instead of inheriting the 4px underline padding
+     above, otherwise the pill sits visually low and off-center. */
+  .nav-links a.nav-cta{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--sage);
+    color:var(--cream-2);
+    padding:9px 18px;
+    border-radius:100px;
+    border-bottom:none;
+    font-weight:600;
+    font-size:14px;
+    line-height:1;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .nav-links a.nav-cta:hover{ background:var(--sage-d); border-color:transparent; transform:translateY(-1px); }
+  .nav-cta svg{ flex-shrink:0; }
+  .menu-btn{
+    display:none;
+    background:none; border:none;
+    width:38px; height:38px;
+    align-items:center; justify-content:center;
+  }
+  .menu-btn span, .menu-btn span::before, .menu-btn span::after{
+    content:""; display:block;
+    width:22px; height:2px;
+    background:var(--espresso);
+    position:relative;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+  .menu-btn span::before{ position:absolute; top:-7px; }
+  .menu-btn span::after{ position:absolute; top:7px; }
+
+  @media (max-width:800px){
+    .nav-links{
+      position:fixed; inset:64px 0 auto 0;
+      background:var(--cream-2);
+      flex-direction:column;
+      align-items:flex-start;
+      padding:20px 24px 26px;
+      border-bottom:1px solid var(--line);
+      transform:translateY(-130%);
+      transition:transform .25s ease;
+      gap:16px;
     }
-  </style>
+    .nav-links.open{ transform:translateY(0); }
+    .menu-btn{ display:flex; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:76px 24px 110px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    max-width:1140px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:56px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(40px, 6vw, 68px);
+    line-height:0.98;
+  }
+  .hero h1 .highlight{
+    position:relative;
+    display:inline-block;
+    font-style:italic;
+    color:var(--terracotta);
+    font-weight:500;
+  }
+  .hero h1 .scribble{
+    position:absolute;
+    left:2%; bottom:-0.14em;
+    width:96%;
+    height:0.16em;
+    color:var(--honey);
+  }
+  .hero p.lede{
+    margin-top:22px;
+    font-size:18px;
+    max-width:44ch;
+    color:var(--espresso-70);
+  }
+  .hero-actions{
+    margin-top:34px;
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 26px;
+    border-radius:100px;
+    font-weight:600;
+    font-size:15px;
+    text-decoration:none;
+    border:1px solid transparent;
+    transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
+  }
+  .btn-primary{ background:var(--terracotta); color:var(--cream-2); }
+  .btn-primary:hover{ background:var(--terracotta-d); transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(193,101,47,0.6); }
+  .btn-ghost{ background:transparent; border-color:var(--espresso); color:var(--espresso); }
+  .btn-ghost:hover{ background:var(--espresso); color:var(--cream-2); }
+
+  /* ----- Hero visual: two deckle-edged kraft labels stacked, plus a
+     circular ink-stamp — the same "paper tag" language used again,
+     smaller scale, on every product card further down the page. ----- */
+  .hero-visual{
+    position:relative;
+    aspect-ratio:1/1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .label{
+    position:absolute;
+    inset:6%;
+    filter:url(#deckle);
+  }
+  .label-back{
+    background:var(--kraft-dark);
+    transform:rotate(-9deg);
+  }
+  .label-front{
+    background:var(--kraft);
+    transform:rotate(4deg);
+    box-shadow:0 18px 34px -14px rgba(43,29,18,0.35);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .label-fallback-art{ width:56%; height:56%; filter:none; }
+  /* El visor 3D vive por fuera de .label-front a propósito: si heredara
+     el filter:url(#deckle) del papel rasgado, el modelo se vería
+     "ondulado" en vez de nítido. Se superpone en el mismo lugar. */
+  .hero-visual .viewer-mount{
+    inset:6%;
+    transform:rotate(4deg);
+  }
+  .ink-stamp{
+    position:absolute;
+    top:-8%; right:-6%;
+    width:34%;
+    color:var(--espresso);
+    animation:stampIn .5s ease .3s both;
+    z-index:2;
+  }
+  @keyframes stampIn{
+    from{ opacity:0; transform:scale(0.7) rotate(-14deg); }
+    to{ opacity:1; transform:scale(1) rotate(-8deg); }
+  }
+  @media (prefers-reduced-motion: reduce){ .ink-stamp{ animation:none; transform:rotate(-8deg); } }
+
+  /* ----- Torn-paper divider: a jagged deckle edge, not a repeating
+     geometric pattern — reuses the same SVG filter as the hero labels
+     so the "torn kraft paper" motif is consistent site-wide. ----- */
+  .torn-edge{
+    position:relative;
+    height:46px;
+    margin-top:-1px;
+  }
+  .torn-edge svg{ width:100%; height:100%; display:block; }
+
+  /* ---------- SECTION HEADINGS ---------- */
+  section{ padding:88px 0; }
+  .section-head{
+    max-width:640px;
+    margin:0 0 44px;
+  }
+  .section-head h2{
+    font-size:clamp(30px, 4vw, 42px);
+    margin-top:10px;
+  }
+  .section-head p{
+    margin-top:14px;
+    color:var(--espresso-70);
+    font-size:16px;
+  }
+
+  /* ---------- CATALOG ---------- */
+  .catalog{ background:var(--cream-2); }
+  .filters{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin-bottom:36px;
+  }
+  .filter-pill{
+    border:1px solid var(--line);
+    background:transparent;
+    padding:9px 18px;
+    border-radius:100px;
+    font-size:14px;
+    font-weight:500;
+    transition:background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .filter-pill:hover{ border-color:var(--terracotta); }
+  .filter-pill.active{
+    background:var(--espresso);
+    color:var(--cream-2);
+    border-color:var(--espresso);
+  }
+
+  .product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+    gap:26px 26px;
+    row-gap:46px;
+  }
+  /* Each card hangs like a kraft price-tag: a clothespin at the top,
+     a short string, and a slight tilt that straightens on hover —
+     the small-scale echo of the labels in the hero. */
+  .product-card{
+    position:relative;
+    background:var(--cream);
+    border-radius:4px 4px var(--radius-md) var(--radius-md);
+    overflow:visible;
+    border:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    transform:rotate(var(--rot, -1.5deg));
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
+  }
+  .product-card:nth-child(5n+1){ --rot:-2deg; }
+  .product-card:nth-child(5n+2){ --rot:1.5deg; }
+  .product-card:nth-child(5n+3){ --rot:-1deg; }
+  .product-card:nth-child(5n+4){ --rot:2deg; }
+  .product-card:nth-child(5n+5){ --rot:-1.5deg; }
+  .product-card:hover{ transform:rotate(0deg) translateY(-6px); box-shadow:var(--shadow-card); }
+  .tag-string{
+    position:absolute;
+    top:-22px; left:50%;
+    width:1.5px; height:24px;
+    background:var(--espresso);
+    opacity:.4;
+    transform:translateX(-50%);
+  }
+  .tag-peg{
+    position:absolute;
+    top:-34px; left:50%;
+    transform:translateX(-50%);
+    width:22px; height:16px;
+    color:var(--espresso-70);
+  }
+  .tag-hole{
+    position:absolute;
+    top:-4px; left:50%;
+    transform:translateX(-50%);
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--cream-2);
+    border:1px solid var(--espresso-70);
+    z-index:2;
+  }
+
+  .product-photo{
+    position:relative;
+    aspect-ratio:4/3;
+    background:var(--kraft);
+  }
+  .product-photo img{ width:100%; height:100%; object-fit:cover; }
+  .photo-placeholder{
+    position:absolute; inset:0;
+    display:none;
+    flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:8px;
+    color:var(--espresso-70);
+    background:var(--kraft);
+  }
+  .photo-placeholder svg{ width:44px; height:44px; opacity:.55; }
+  .photo-placeholder span{
+    font-family:'Space Mono', monospace;
+    font-size:10.5px;
+    text-align:center;
+    padding:0 10px;
+  }
+  .star-ribbon{
+    position:absolute; top:10px; left:10px;
+    background:var(--honey);
+    color:var(--espresso);
+    font-family:'Space Mono', monospace;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:5px 10px;
+    border-radius:100px;
+    z-index:5;
+  }
+
+  /* ----- Visor 3D: se monta arriba de la foto y aparece con un
+     fundido cuando el modelo terminó de cargar. Si no hay modelo
+     todavía (o falla la carga), la foto de abajo sigue tal cual. ----- */
+  .viewer-mount{
+    position:absolute; inset:0;
+    z-index:3;
+    opacity:0;
+    transition:opacity .5s ease;
+    pointer-events:none;
+  }
+  .viewer-mount.is-ready{
+    opacity:1;
+    pointer-events:auto;
+    cursor:grab;
+  }
+  .viewer-mount.is-ready:active{ cursor:grabbing; }
+  .viewer-mount canvas{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+  }
+
+  .product-body{
+    padding:18px 18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    flex:1;
+  }
+  .product-body h3{
+    font-size:19px;
+    font-weight:600;
+  }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tag{
+    font-family:'Space Mono', monospace;
+    font-size:10px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:100px;
+    background:var(--sage);
+    color:var(--cream-2);
+  }
+  .tag.tag-dulce{ background:var(--terracotta); }
+  .tag.tag-salado{ background:var(--espresso); }
+
+  .product-foot{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .price{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:17px;
+  }
+  .qty-stepper{
+    display:flex; align-items:center; gap:0;
+    border:1px solid var(--line);
+    border-radius:100px;
+    overflow:hidden;
+  }
+  .qty-stepper button{
+    background:none; border:none;
+    width:30px; height:30px;
+    font-size:16px;
+    color:var(--espresso);
+  }
+  .qty-stepper button:hover{ background:var(--kraft); }
+  .qty-stepper span{
+    min-width:22px;
+    text-align:center;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+  }
+  .add-btn{
+    width:100%;
+    margin-top:4px;
+    background:var(--espresso);
+    color:var(--cream-2);
+    border:none;
+    padding:11px;
+    border-radius:100px;
+    font-weight:600;
+    font-size:13.5px;
+    transition:background .18s ease;
+  }
+  .add-btn:hover{ background:var(--terracotta); }
+  .add-btn.added{ background:var(--sage); }
+
+  .empty-state{
+    grid-column:1/-1;
+    text-align:center;
+    padding:50px 20px;
+    color:var(--espresso-70);
+    font-size:15px;
+    border:1px dashed var(--line);
+    border-radius:var(--radius-md);
+  }
+
+  /* ---------- ABOUT / NUTRITION LIST ---------- */
+  .about{
+    background:var(--kraft);
+  }
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+    align-items:start;
+  }
+  .about-text p{
+    font-size:16.5px;
+    color:var(--espresso-70);
+    margin:0 0 16px;
+  }
+  .about-text p:last-child{ margin-bottom:0; }
+
+  .facts-card{
+    background:var(--cream-2);
+    border-radius:var(--radius-md);
+    padding:28px 30px;
+    border:1px solid var(--espresso);
+  }
+  .facts-card h3{
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    border-bottom:3px solid var(--espresso);
+    padding-bottom:10px;
+    margin-bottom:14px;
+  }
+  .facts-list{ list-style:none; margin:0; padding:0; }
+  .facts-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14.5px;
+  }
+  .facts-list li:last-child{ border-bottom:none; }
+  .facts-list li span:first-child{ font-weight:600; }
+  .facts-list li span:last-child{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    color:var(--espresso-70);
+    text-align:right;
+  }
+
+  /* ---------- DELIVERY / CONTACT ---------- */
+  .delivery{ background:var(--cream-2); }
+  .delivery-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:26px;
+  }
+  .info-card{
+    background:var(--cream);
+    border-radius:var(--radius-md);
+    padding:26px 28px;
+    border:1px solid var(--line);
+  }
+  .info-card h3{
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .info-card p{ color:var(--espresso-70); font-size:15px; margin:0; }
+  .info-card .icon{
+    width:34px; height:34px;
+    border-radius:50%;
+    background:var(--terracotta);
+    color:var(--cream-2);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .info-card .icon svg{ width:17px; height:17px; }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background:var(--espresso);
+    color:var(--cream-2);
+    padding:50px 0 26px;
+  }
+  .footer-grid{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:26px;
+    padding-bottom:30px;
+    border-bottom:1px solid #ffffff22;
+  }
+  .footer-logo{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:24px;
+  }
+  .footer-logo span{ color:var(--honey); }
+  .footer-tag{
+    color:#ffffffaa;
+    font-size:14px;
+    margin-top:8px;
+    max-width:32ch;
+  }
+  .footer-links{
+    display:flex; gap:34px; flex-wrap:wrap;
+  }
+  .footer-col h4{
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#ffffff88;
+    margin:0 0 12px;
+  }
+  .footer-col a{
+    display:block;
+    text-decoration:none;
+    color:#ffffffdd;
+    font-size:14.5px;
+    margin-bottom:9px;
+  }
+  .footer-col a:hover{ color:var(--honey); }
+  .footer-bottom{
+    padding-top:22px;
+    font-size:12.5px;
+    color:#ffffff66;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  /* ---------- FLOATING WHATSAPP + CART ---------- */
+  .fab-wrap{
+    position:fixed;
+    right:22px; bottom:22px;
+    z-index:80;
+    display:flex; flex-direction:column;
+    align-items:flex-end;
+    gap:12px;
+  }
+  .cart-panel{
+    width:320px;
+    max-width:calc(100vw - 44px);
+    background:var(--cream-2);
+    border-radius:var(--radius-md);
+    border:1px solid var(--line);
+    box-shadow:0 20px 45px -14px rgba(43,29,18,0.4);
+    padding:20px;
+    display:none;
+    max-height:60vh;
+    overflow:auto;
+  }
+  .cart-panel.open{ display:block; }
+  .cart-panel h4{
+    font-family:'Fraunces', serif;
+    font-size:18px;
+    margin-bottom:12px;
+  }
+  .cart-items{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+  .cart-item{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:13.5px;
+    gap:8px;
+  }
+  .cart-item .ci-name{ font-weight:600; }
+  .cart-item .ci-meta{ color:var(--espresso-70); font-size:12px; }
+  .cart-item button{
+    background:none; border:none;
+    color:var(--terracotta-d);
+    font-size:12px;
+    text-decoration:underline;
+  }
+  .cart-empty{ font-size:13.5px; color:var(--espresso-70); }
+  .cart-total{
+    display:flex; justify-content:space-between;
+    font-weight:700;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    margin-bottom:14px;
+  }
+  .cart-order-btn{
+    width:100%;
+    background:var(--sage);
+    color:var(--cream-2);
+    border:none;
+    padding:13px;
+    border-radius:100px;
+    font-weight:700;
+    font-size:14px;
+  }
+  .cart-order-btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .cart-order-btn:not(:disabled):hover{ background:var(--sage-d); }
+
+  .fab-btn{
+    width:60px; height:60px;
+    border-radius:50%;
+    background:var(--terracotta);
+    color:var(--cream-2);
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 14px 30px -10px rgba(193,101,47,0.7);
+    position:relative;
+    transition:transform .18s ease;
+  }
+  .fab-btn:hover{ transform:scale(1.06); }
+  .fab-btn svg{ width:26px; height:26px; }
+  .fab-count{
+    position:absolute; top:-4px; right:-4px;
+    background:var(--sage);
+    color:var(--cream-2);
+    font-family:'Space Mono', monospace;
+    font-size:11px;
+    font-weight:700;
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* reveal on scroll */
+  .reveal{ opacity:0; transform:translateY(16px); transition:opacity .55s ease, transform .55s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+
+  @media (max-width:860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-visual{ max-width:280px; margin:0 auto; }
+    .about-grid, .delivery-grid{ grid-template-columns:1fr; }
+  }
+</style>
 </head>
 <body>
 
-<div class="main-header no-print">
-  <img src="logo-transparente.webp" alt="LoomTech Logo" class="header-logo" onerror="this.style.display='none'">
-  <div class="header-title">
-    <h1>LoomTech</h1>
-    <p>Sistema de Emisión de Presupuestos y Comprobantes</p>
-  </div>
-</div>
+<!-- Filtro reutilizado para el efecto de "papel rasgado" (etiquetas del
+     hero y separador de sección). No se ve directamente, solo lo usan
+     otros elementos vía filter:url(#deckle). -->
+<svg width="0" height="0" style="position:absolute;">
+  <filter id="deckle" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="2" seed="6" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 
-<div class="container">
-  <!-- Panel de Formulario -->
-  <div class="panel no-print">
-    <h2>Datos del Documento</h2>
+<header>
+  <nav class="nav">
+    <!-- LOGO: subí tu archivo a logo.png (misma carpeta que este
+         index.html — o .svg, cambiando la extensión acá abajo). Si no
+         existe, se muestra el texto solo. -->
+    <a href="#" class="logo-wrap" aria-label="Vale la pena — inicio">
+      <img src="logo.png" alt="Vale la pena" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo" style="display:none;">Vale <span>la pena</span></div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#catalogo">Catálogo</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#contacto">Entrega y contacto</a></li>
+      <li>
+        <a class="nav-cta" href="https://instagram.com/valelapena.cba" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          Instagram
+        </a>
+      </li>
+    </ul>
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menú"><span></span></button>
+  </nav>
+</header>
 
-    <div class="grid-2">
-      <div>
-        <label>Tipo de Documento</label>
-        <select id="docTypeSelect" onchange="handleDocTypeChange()">
-          <optgroup label="Comprobantes Oficiales">
-            <option value="Factura A">Factura A</option>
-            <option value="Factura B">Factura B</option>
-            <option value="Factura C">Factura C</option>
-          </optgroup>
-          <optgroup label="Documentos Simples">
-            <option value="Presupuesto" selected>Presupuesto</option>
-            <option value="Recibo X">Recibo X</option>
-            <option value="Comprobante de Pago">Comprobante de Pago</option>
-            <option value="Orden de Trabajo">Orden de Trabajo</option>
-            <option value="__custom__">Personalizado...</option>
-          </optgroup>
-        </select>
-      </div>
-      <div>
-        <label>Moneda</label>
-        <select id="currencySelect" onchange="updateInvoice()">
-          <option value="ARS">Pesos Argentinos (ARS)</option>
-          <option value="USD">Dólares (USD)</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="customDocTypeContainer" style="display: none;">
-      <label>Título Personalizado</label>
-      <input type="text" id="customDocType" placeholder="Ej: Nota de Venta" oninput="updateInvoice()">
-    </div>
-
-    <div class="grid-2">
-      <div>
-        <label>Número de Comprobante</label>
-        <input type="number" id="invNumber" value="1" min="1" oninput="updateInvoice()">
-      </div>
-      <div>
-        <label>Fecha de Emisión</label>
-        <input type="date" id="invDate" oninput="updateInvoice()">
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">Snacks saludables · Córdoba</span>
+      <h1>Comer bien
+        <span class="highlight">vale la pena.
+          <svg class="scribble" viewBox="0 0 260 14" fill="none" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M2 8 C 40 2, 70 12, 108 6 S 175 2, 210 9 S 250 4, 258 8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </h1>
+      <p class="lede">Barritas de granola hechas a mano, con ingredientes reales y sin vueltas. Sin conservantes, sin relleno de marketing.</p>
+      <div class="hero-actions">
+        <a href="#catalogo" class="btn btn-primary">Ver catálogo</a>
+        <a href="https://wa.me/5493512760842?text=Hola!%20Quiero%20consultar%20sobre%20los%20snacks%20de%20Vale%20la%20pena" target="_blank" rel="noopener" class="btn btn-ghost">Escribir por WhatsApp</a>
       </div>
     </div>
-
-    <label>Cliente / Equipo</label>
-    <input type="text" id="clientName" placeholder="Ej: Juan Pérez / Equipo Competición" oninput="updateInvoice()">
-
-    <!-- Switch Modo Rally -->
-    <div class="rally-switch-container">
-      <label class="switch">
-        <input type="checkbox" id="rallyModeSwitch" onchange="toggleRallyMode()">
-        <span class="slider"></span>
-      </label>
-      <span class="rally-label">Modo Rally / Competición</span>
-    </div>
-
-    <!-- Detalles estándar -->
-    <div id="standardClientDetails">
-      <label style="margin-top:0;">Datos Adicionales del Cliente</label>
-      <textarea id="clientDetails" rows="2" placeholder="Ej: CUIT: 20-12345678-9&#10;Responsable Inscripto" oninput="updateInvoice()"></textarea>
-    </div>
-
-    <!-- Detalles Rally -->
-    <div id="rallyClientDetails" class="grid-3" style="display: none;">
-      <div>
-        <label style="margin-top:0;">Categoría</label>
-        <input type="text" id="rallyCategory" placeholder="Ej: N4" oninput="updateInvoice()">
+    <div class="hero-visual">
+      <div class="label label-back"></div>
+      <div class="label label-front">
+        <!-- Se ve mientras carga el modelo 3D, o si "producto.glb"
+             todavía no existe — la página nunca se rompe. -->
+        <svg class="label-fallback-art" viewBox="0 0 200 200" fill="none">
+          <ellipse cx="100" cy="105" rx="58" ry="30" fill="#C1652F"/>
+          <circle cx="70" cy="95" r="5" fill="#2B1D12"/>
+          <circle cx="95" cy="115" r="4" fill="#2B1D12"/>
+          <circle cx="120" cy="90" r="5" fill="#2B1D12"/>
+          <circle cx="130" cy="112" r="3.5" fill="#2B1D12"/>
+          <circle cx="80" cy="80" r="3" fill="#2B1D12"/>
+          <circle cx="112" cy="128" r="4" fill="#2B1D12"/>
+        </svg>
       </div>
-      <div>
-        <label style="margin-top:0;">Modelo</label>
-        <input type="text" id="rallyModel" placeholder="Ej: Ford Fiesta" oninput="updateInvoice()">
-      </div>
-      <div>
-        <label style="margin-top:0;">Piloto</label>
-        <input type="text" id="rallyPilot" placeholder="Ej: Juan Pérez" oninput="updateInvoice()">
-      </div>
-    </div>
-
-    <label>Ítems y Servicios</label>
-    <div id="itemsContainer"></div>
-    <button type="button" class="btn-secondary" style="margin-top:8px; width: 100%" onclick="addItem()">+ Agregar Ítem</button>
-
-    <label>Observaciones / Notas</label>
-    <textarea id="observations" rows="2" placeholder="Condiciones de pago..." oninput="updateInvoice()"></textarea>
-
-    <button type="button" class="btn" onclick="saveAndPrint()">Imprimir y Guardar en Historial</button>
-  </div>
-  
-   <!-- Vista Previa de Factura con Marca de Agua -->
-  <div id="invoice" style="background: white; padding: 36px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; display: flex; flex-direction: column; min-height: 255mm; box-sizing: border-box; position: relative; overflow: hidden;">
-    
-    <!-- MARCA DE AGUA EN EL FONDO (Logo SVG traslúcido) -->
-    <div style="position: absolute; top: 0; left: 0; transform; width: 100%; height: 100%; max-width: 820px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; justify-content: center; align-items: center;">
-      <svg viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
-        <!-- Pistas del Circuito Superior -->
-        <path d="M 252 82 L 268 46 L 152 46 L 142 68 L 252 120 L 244 142 L 116 142 L 138 110" stroke="#3f56fb" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Pistas del Circuito Inferior -->
-        <path d="M 78 82 L 114 82 L 56 178 L 188 178 L 172 210 L 48 210" stroke="#3f56fb" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
-        
-        <!-- Nodos Circulares Superiores -->
-        <circle cx="252" cy="82" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
-        <circle cx="138" cy="110" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
-        
-        <!-- Nodos Circulares Inferiores -->
-        <circle cx="78" cy="82" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
-        <circle cx="48" cy="210" r="14" fill="white" stroke="#3f56fb" stroke-width="10"/>
+      <!-- ÚNICO modelo 3D de toda la página. Subí el archivo "producto.glb"
+           a la misma carpeta que este index.html. -->
+      <div class="viewer-mount" data-model="producto.glb" data-name="Vale la pena"></div>
+      <svg class="ink-stamp" viewBox="0 0 160 160">
+        <defs>
+          <path id="stampCircle" d="M 80,80 m -58,0 a 58,58 0 1,1 116,0 a 58,58 0 1,1 -116,0"/>
+        </defs>
+        <circle cx="80" cy="80" r="70" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="80" cy="80" r="60" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 5"/>
+        <text font-family="'Space Mono', monospace" font-size="9.5" letter-spacing="2.5" fill="currentColor">
+          <textPath href="#stampCircle" startOffset="2%">100% HECHO A MANO · CÓRDOBA ·</textPath>
+        </text>
+        <text x="80" y="76" text-anchor="middle" font-family="'Fraunces', serif" font-style="italic" font-weight="600" font-size="19" fill="var(--terracotta)">Vale</text>
+        <text x="80" y="96" text-anchor="middle" font-family="'Fraunces', serif" font-style="italic" font-weight="600" font-size="19" fill="var(--terracotta)">la pena</text>
       </svg>
     </div>
-
-    <!-- ENCABEZADO: Forzado horizontalmente izquierda-derecha -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; position: relative; width: 100%; z-index: 1;">
-      
-      <!-- Izquierda: Logo y Empresa -->
-      <div style="display: flex; align-items: center; gap: 16px; text-align: left; max-width: 60%;">
-        <img src="logo-transparente.webp" alt="LoomTech" style="width: 90px; height: 90px; object-fit: contain; flex-shrink: 0;" onerror="this.style.display='none'">
-        <div>
-          <h1 style="margin: 0; font-size: 1.4rem; color: #3f56fb;">LoomTech</h1>
-          <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b; line-height: 1.4;">
-            Razón Social: <strong>Leonardo Sargiotti</strong><br>
-            CUIL: 20-27543260-2<br>
-            Córdoba, Argentina | +54 351 376-4531<br>
-            Loomtechargentina@gmail.com
-          </p>
-        </div>
-      </div>
-
-      <!-- Centro Flotante: Cuadro Letra AFIP -->
-      <div id="viewDocLetterBox" style="display: none; position: absolute; left: 50%; transform: translateX(-50%); top: -5px; flex-direction: column; align-items: center; justify-content: center; width: 64px; height: 64px; border: 2px solid #0f172a; background: white;">
-        <div id="viewDocLetter" style="font-size: 2.2rem; font-weight: 900; color: #0f172a; line-height: 1;">C</div>
-        <div id="viewDocCode" style="font-size: 0.6rem; font-weight: 700; color: #0f172a; margin-top: 3px;">Cod. 011</div>
-      </div>
-
-      <!-- Derecha: Datos del Recibo -->
-      <div style="text-align: right; min-width: 180px;">
-        <h3 id="viewDocType" style="margin: 0; font-size: 1.05rem; text-transform: uppercase; color: #334155;">PRESUPUESTO</h3>
-        <p style="margin: 4px 0 0 0; font-size: 1rem; font-weight: bold; color: #0f172a;">N° <span id="viewInvNumber">00000001</span></p>
-        <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: #64748b;">Fecha: <strong style="color: #0f172a;"><span id="viewDate"></span></strong></p>
-        <p id="viewCurrencyBadge" style="margin: 3px 0 0 0; font-size: 0.78rem; font-weight: 600; color: #3f56fb;">MONEDA: ARS ($)</p>
-      </div>
-    </div>
-
-    <!-- CUERPO DEL COMPROBANTE -->
-    <div style="flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 1;">
-      <div style="margin-bottom: 22px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
-        <strong style="font-size: 0.78rem; color: #64748b; text-transform: uppercase;">Receptor / Cliente</strong>
-        <div id="viewClient" style="font-size: 1.05rem; font-weight: 600; margin-top: 3px;">-</div>
-        <div id="viewClientDetails" style="font-size: 0.85rem; color: #475569; margin-top: 2px; white-space: pre-line; min-height: 14px;"></div>
-      </div>
-
-      <table class="inv-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-        <thead>
-          <tr>
-            <th style="padding: 10px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Descripción</th>
-            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Cant.</th>
-            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Unitario (<span class="col-curr-symbol">$</span>)</th>
-            <th style="padding: 10px 8px; text-align: right; border-bottom: 1px solid #e2e8f0; background: #f8fafc; color: #475569;">Total (<span class="col-curr-symbol">$</span>)</th>
-          </tr>
-        </thead>
-        <tbody id="viewItems"></tbody>
-      </table>
-    </div>
-
-    <!-- FOOTER AL MARGEN INFERIOR (Extremos alineados) -->
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 40px; width: 100%; position: relative; z-index: 1;">
-      
-      <!-- Izquierda: Observaciones -->
-      <div style="text-align: left; max-width: 65%;">
-        <strong style="font-size: 0.78rem; color: #64748b; text-transform: uppercase;">Observaciones:</strong>
-        <p id="viewObservations" style="font-size: 0.85rem; color: #475569; margin-top: 4px; white-space: pre-line; margin-bottom: 0;">-</p>
-      </div>
-      
-      <!-- Derecha: Total -->
-      <div style="text-align: right; white-space: nowrap;">
-        <div id="viewTotalCurrencyLabel" style="font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Total ARS</div>
-        <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-top: 2px;">
-          <span id="viewGrandTotalSymbol">$</span> <span id="viewGrandTotal">0.00</span>
-        </div>
-      </div>
-
-    </div>
   </div>
-  <!-- Panel de Historial -->
-  <div class="panel panel-full no-print">
-    <div class="flex-between">
-      <h2>Historial de Comprobantes</h2>
-      <div>
-        <button class="btn-secondary" onclick="exportHistory()">⬇ Exportar JSON</button>
-        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importHistory(event)">
-        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Importar JSON</button>
-      </div>
-    </div>
-    
-    <table class="inv-table" style="margin-top: 16px;">
-      <thead>
-        <tr>
-          <th>N° Doc</th>
-          <th>Fecha</th>
-          <th>Cliente / Piloto</th>
-          <th>Tipo</th>
-          <th class="text-right">Total</th>
-          <th class="text-right">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="historyTableBody">
-      </tbody>
-    </table>
-  </div>
+</section>
 
+<div class="torn-edge">
+  <svg viewBox="0 0 1200 46" preserveAspectRatio="none" filter="url(#deckle)" aria-hidden="true">
+    <rect x="0" y="0" width="1200" height="46" style="fill:var(--cream-2);"/>
+  </svg>
 </div>
 
-<script>
-  let items = [ { desc: 'Servicio', qty: 1, price: 0 } ];
+<!-- ====================== CATÁLOGO ====================== -->
+<section class="catalog" id="catalogo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Catálogo</span>
+      <h2>Nuestros productos</h2>
+      <p>Elegí, sumá al pedido y lo cerrás directo por WhatsApp. Sin registros ni vueltas.</p>
+    </div>
 
-  function init() {
-    document.getElementById('invNumber').value = localStorage.getItem('loomtech_next_inv_num') || 1;
-    document.getElementById('invDate').valueAsDate = new Date();
-    renderFormItems();
-    toggleRallyMode();
-    renderHistory();
+    <div class="filters reveal">
+      <button class="filter-pill active" data-filter="todos">Todos</button>
+      <button class="filter-pill" data-filter="dulce">Dulce</button>
+      <button class="filter-pill" data-filter="salado">Salado</button>
+      <button class="filter-pill" data-filter="vegano">Vegano</button>
+      <button class="filter-pill" data-filter="sin-tacc">Sin TACC</button>
+    </div>
+
+    <div class="product-grid reveal" id="productGrid"></div>
+  </div>
+</section>
+
+<!-- ====================== NOSOTROS ====================== -->
+<section class="about" id="nosotros">
+  <div class="wrap about-grid">
+    <div class="about-text reveal">
+      <span class="eyebrow">Nosotros</span>
+      <h2 style="margin-top:10px; font-size:34px;">Por qué existe Vale la pena</h2>
+      <p style="margin-top:20px;">Arrancamos porque nos cansamos de leer etiquetas eternas para comer algo tan simple como una barrita de granola. Vale la pena nace en Córdoba con una idea simple: snacks ricos, hechos con pocos ingredientes y todos reconocibles.</p>
+      <p>Cada tanda se hace en lotes chicos, a mano, así podemos controlar calidad de principio a fin. Nada de producción en masa, nada de rellenar con azúcar barata.</p>
+    </div>
+    <div class="facts-card reveal">
+      <h3>Por qué vale la pena</h3>
+      <ul class="facts-list">
+        <li><span>Ingredientes</span><span>Reales, reconocibles</span></li>
+        <li><span>Conservantes</span><span>Ninguno</span></li>
+        <li><span>Producción</span><span>Artesanal, en Córdoba</span></li>
+        <li><span>Lote</span><span>Chico y controlado</span></li>
+        <li><span>Entrega</span><span>Anillo de circunvalación</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== ENTREGA Y CONTACTO ====================== -->
+<section class="delivery" id="contacto">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Entrega y contacto</span>
+      <h2>Hacé tu pedido</h2>
+      <p>Armás el pedido en el catálogo y lo confirmamos por WhatsApp. Así de simple.</p>
+    </div>
+
+    <div class="delivery-grid reveal">
+      <div class="info-card">
+        <h3><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>Zona de entrega</h3>
+        <!-- EDITAR ZONA: cambiá este texto si la zona de reparto cambia -->
+        <p>Entregamos dentro del anillo de circunvalación de Córdoba Capital. Fuera de esa zona, consultanos por WhatsApp.</p>
+      </div>
+      <div class="info-card">
+        <h3><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>Horarios</h3>
+        <!-- EDITAR HORARIO: reemplazá por tus horarios reales -->
+        <p>Lunes a viernes de 9 a 19 hs · Sábados de 9 a 13 hs. Pedidos por WhatsApp, respondemos dentro de ese horario.</p>
+      </div>
+      <div class="info-card">
+        <h3><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 0 1 2-2h2.28a1 1 0 0 1 .99.85l.6 3.5a1 1 0 0 1-.5 1.03l-1.7 1a11 11 0 0 0 5.5 5.5l1-1.7a1 1 0 0 1 1.03-.5l3.5.6a1 1 0 0 1 .85.99V19a2 2 0 0 1-2 2h-1C8.16 21 3 15.84 3 9V5z"/></svg></span>WhatsApp</h3>
+        <p><a href="https://wa.me/5493512760842" target="_blank" rel="noopener" style="text-decoration:underline;">+54 9 3512 76-0842</a> — la vía más rápida para pedidos y consultas.</p>
+      </div>
+      <div class="info-card">
+        <h3><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></span>Instagram</h3>
+        <p><a href="https://instagram.com/valelapena.cba" target="_blank" rel="noopener" style="text-decoration:underline;">@valelapena.cba</a> — nuevos sabores y novedades.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Vale <span>la pena</span></div>
+        <p class="footer-tag">Snacks saludables hechos a mano en Córdoba.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Navegación</h4>
+          <a href="#catalogo">Catálogo</a>
+          <a href="#nosotros">Nosotros</a>
+          <a href="#contacto">Contacto</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <a href="https://wa.me/5493512760842" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="https://instagram.com/valelapena.cba" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Vale la pena · Córdoba, Argentina</span>
+      <span>Snacks que valen la pena 🌾</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ====================== CARRITO FLOTANTE ====================== -->
+<div class="fab-wrap">
+  <div class="cart-panel" id="cartPanel">
+    <h4>Tu pedido</h4>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-total" id="cartTotal" style="display:none;">
+      <span>Total</span><span id="cartTotalValue">$0</span>
+    </div>
+    <button class="cart-order-btn" id="orderBtn" disabled>Pedir por WhatsApp</button>
+  </div>
+  <button class="fab-btn" id="fabBtn" aria-label="Ver pedido">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h3l2.4 12.4a2 2 0 0 0 2 1.6h9.2a2 2 0 0 0 2-1.6L21 6H6"/></svg>
+    <span class="fab-count" id="fabCount" style="display:none;">0</span>
+  </button>
+</div>
+
+<!-- ======================================================================
+     MOTOR 3D
+     Controla el único modelo 3D de la página: el que flota en el sello
+     circular del hero ("producto.glb"). Se monta cuando esa parte de la
+     página entra en pantalla y se destruye cuando sale, para no gastar
+     recursos de más si el visitante nunca llega a verlo.
+     ====================================================================== -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
   }
-
-  function handleDocTypeChange() {
-    document.getElementById('customDocTypeContainer').style.display = 
-      document.getElementById('docTypeSelect').value === '__custom__' ? 'block' : 'none';
-    updateInvoice();
-  }
-
-  function toggleRallyMode() {
-    const isRally = document.getElementById('rallyModeSwitch').checked;
-    document.getElementById('standardClientDetails').style.display = isRally ? 'none' : 'block';
-    document.getElementById('rallyClientDetails').style.display = isRally ? 'grid' : 'none';
-    updateInvoice();
-  }
-
-  function renderFormItems() {
-    const container = document.getElementById('itemsContainer');
-    container.innerHTML = '';
-    items.forEach((item, index) => {
-      const row = document.createElement('div');
-      row.className = 'item-row';
-      row.innerHTML = `
-        <input type="text" placeholder="Descripción" value="${item.desc}" oninput="updateItem(${index}, 'desc', this.value)">
-        <input type="number" placeholder="Cant." value="${item.qty}" min="1" oninput="updateItem(${index}, 'qty', this.value)">
-        <input type="number" placeholder="Precio" value="${item.price}" min="0" step="any" oninput="updateItem(${index}, 'price', this.value)">
-        <button class="remove-btn" onclick="removeItem(${index})">&times;</button>
-      `;
-      container.appendChild(row);
-    });
-  }
-
-  function addItem() { items.push({ desc: '', qty: 1, price: 0 }); renderFormItems(); updateInvoice(); }
-  function updateItem(i, k, v) { items[i][k] = k === 'desc' ? v : (parseFloat(v) || 0); updateInvoice(); }
-  function removeItem(i) { if(items.length > 1) { items.splice(i, 1); renderFormItems(); updateInvoice(); } }
-
-  function updateInvoice() {
-    const docSelect = document.getElementById('docTypeSelect').value;
-    let docTitle = docSelect === '__custom__' ? (document.getElementById('customDocType').value || 'Comprobante') : docSelect;
-    document.getElementById('viewDocType').innerText = docTitle;
-
-    const showLetterBox = /FACTURA A|FACTURA B|FACTURA C|RECIBO X/i.test(docTitle);
-    document.getElementById('viewDocLetterBox').style.display = showLetterBox ? 'flex' : 'none';
-    if(showLetterBox) {
-      if(/FACTURA A/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='A'; document.getElementById('viewDocCode').innerText='Cod. 01'; }
-      if(/FACTURA B/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='B'; document.getElementById('viewDocCode').innerText='Cod. 06'; }
-      if(/FACTURA C/i.test(docTitle)) { document.getElementById('viewDocLetter').innerText='C'; document.getElementById('viewDocCode').innerText='Cod. 11'; }
-      if(/RECIBO X/i.test(docTitle))  { document.getElementById('viewDocLetter').innerText='X'; document.getElementById('viewDocCode').innerText=''; }
-    }
-
-    const isUSD = document.getElementById('currencySelect').value === 'USD';
-    const sym = isUSD ? 'USD' : '$'; const loc = isUSD ? 'en-US' : 'es-AR';
-    document.getElementById('viewCurrencyBadge').innerText = isUSD ? 'MONEDA: USD (Dólares)' : 'MONEDA: ARS (Pesos)';
-    document.querySelectorAll('.col-curr-symbol').forEach(el => el.innerText = sym);
-    document.getElementById('viewTotalCurrencyLabel').innerText = isUSD ? 'Total USD' : 'Total ARS';
-    document.getElementById('viewGrandTotalSymbol').innerText = sym;
-
-    const cName = document.getElementById('clientName').value || 'Consumidor Final';
-    document.getElementById('viewClient').innerText = cName;
-
-    const isRally = document.getElementById('rallyModeSwitch').checked;
-    if (isRally) {
-      const cat = document.getElementById('rallyCategory').value;
-      const mod = document.getElementById('rallyModel').value;
-      const pil = document.getElementById('rallyPilot').value;
-      let rallyData = [];
-      if (cat) rallyData.push(`Categoría: ${cat}`);
-      if (mod) rallyData.push(`Modelo: ${mod}`);
-      if (pil) rallyData.push(`Piloto: ${pil}`);
-      document.getElementById('viewClientDetails').innerText = rallyData.join(' | ');
-    } else {
-      document.getElementById('viewClientDetails').innerText = document.getElementById('clientDetails').value;
-    }
-
-    document.getElementById('viewObservations').innerText = document.getElementById('observations').value || '-';
-    document.getElementById('viewInvNumber').innerText = String(document.getElementById('invNumber').value || 1).padStart(8, '0');
-    
-    document.title = `${docTitle.replace(/[^a-zA-Z0-9]/g,'_')}_N${document.getElementById('viewInvNumber').innerText}_${cName.replace(/[^a-zA-Z0-9]/g,'_')}`;
-    const dVal = document.getElementById('invDate').value;
-    document.getElementById('viewDate').innerText = dVal ? dVal.split('-').reverse().join('/') : '-';
-
-    const tbody = document.getElementById('viewItems'); tbody.innerHTML = '';
-    let grandTotal = 0;
-    items.forEach(item => {
-      const sub = item.qty * item.price; grandTotal += sub;
-      tbody.innerHTML += `<tr><td>${item.desc}</td><td class="text-right">${item.qty}</td><td class="text-right">${sym} ${item.price.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td class="text-right">${sym} ${sub.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`;
-    });
-    document.getElementById('viewGrandTotal').innerText = grandTotal.toLocaleString(loc,{minimumFractionDigits:2,maximumFractionDigits:2});
-  }
-  
-  function saveAndPrint() {
-    const isRally = document.getElementById('rallyModeSwitch').checked;
-    
-    const invData = {
-      id: Date.now(),
-      number: document.getElementById('invNumber').value,
-      date: document.getElementById('invDate').value,
-      typeSelect: document.getElementById('docTypeSelect').value,
-      customType: document.getElementById('customDocType').value,
-      currency: document.getElementById('currencySelect').value,
-      clientName: document.getElementById('clientName').value,
-      isRally: isRally,
-      clientDetails: document.getElementById('clientDetails').value,
-      rallyCategory: document.getElementById('rallyCategory').value,
-      rallyModel: document.getElementById('rallyModel').value,
-      rallyPilot: document.getElementById('rallyPilot').value,
-      obs: document.getElementById('observations').value,
-      items: JSON.parse(JSON.stringify(items)),
-      totalStr: document.getElementById('viewGrandTotal').innerText
-    };
-
-    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
-    history.push(invData);
-    localStorage.setItem('loomtech_history', JSON.stringify(history));
-    
-    let nextNum = parseInt(invData.number) + 1;
-    localStorage.setItem('loomtech_next_inv_num', nextNum);
-
-    window.print();
-    setTimeout(() => {
-      document.getElementById('invNumber').value = nextNum;
-      renderHistory();
-      updateInvoice();
-    }, 1000);
-  }
-
-  function renderHistory() {
-    const tbody = document.getElementById('historyTableBody');
-    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
-    tbody.innerHTML = '';
-    if(history.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding: 20px;">No hay comprobantes guardados aún.</td></tr>'; return;
-    }
-    history.slice().reverse().forEach(inv => {
-      const tipoReal = inv.typeSelect === '__custom__' ? inv.customType : inv.typeSelect;
-      const fechaFormat = inv.date ? inv.date.split('-').reverse().join('/') : '-';
-      const displayClient = inv.isRally && inv.rallyPilot ? `${inv.clientName} (Piloto: ${inv.rallyPilot})` : (inv.clientName || 'Consumidor Final');
-
-      const row = `<tr>
-        <td>${String(inv.number).padStart(8,'0')}</td>
-        <td>${fechaFormat}</td>
-        <td>${displayClient}</td>
-        <td>${tipoReal}</td>
-        <td class="text-right">${inv.currency} ${inv.totalStr}</td>
-        <td class="text-right">
-          <button class="btn-secondary btn-sm" onclick="loadInvoice(${inv.id})">Cargar</button>
-          <button class="btn-secondary btn-sm btn-danger" onclick="deleteInvoice(${inv.id})">Borrar</button>
-        </td>
-      </tr>`;
-      tbody.innerHTML += row;
-    });
-  }
-
-  function loadInvoice(id) {
-    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
-    let inv = history.find(i => i.id === id);
-    if(!inv) return;
-    
-    document.getElementById('invNumber').value = inv.number;
-    document.getElementById('invDate').value = inv.date;
-    document.getElementById('docTypeSelect').value = inv.typeSelect;
-    document.getElementById('customDocType').value = inv.customType || '';
-    handleDocTypeChange();
-    document.getElementById('currencySelect').value = inv.currency;
-    document.getElementById('clientName').value = inv.clientName;
-    
-    document.getElementById('rallyModeSwitch').checked = inv.isRally || false;
-    document.getElementById('clientDetails').value = inv.clientDetails || '';
-    document.getElementById('rallyCategory').value = inv.rallyCategory || '';
-    document.getElementById('rallyModel').value = inv.rallyModel || '';
-    document.getElementById('rallyPilot').value = inv.rallyPilot || '';
-    toggleRallyMode();
-
-    document.getElementById('observations').value = inv.obs;
-    items = JSON.parse(JSON.stringify(inv.items));
-    
-    renderFormItems();
-    updateInvoice();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function deleteInvoice(id) {
-    if(!confirm("¿Estás seguro de eliminar este comprobante del historial?")) return;
-    let history = JSON.parse(localStorage.getItem('loomtech_history')) || [];
-    history = history.filter(i => i.id !== id);
-    localStorage.setItem('loomtech_history', JSON.stringify(history));
-    renderHistory();
-  }
-
-  function exportHistory() {
-    const data = { next_num: localStorage.getItem('loomtech_next_inv_num'), history: localStorage.getItem('loomtech_history') };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `LoomTech_Historial_${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-  }
-
-  function importHistory(event) {
-    const file = event.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = JSON.parse(e.target.result);
-        if(data.next_num) localStorage.setItem('loomtech_next_inv_num', data.next_num);
-        if(data.history) localStorage.setItem('loomtech_history', data.history);
-        init();
-        alert("¡Historial importado con éxito!");
-      } catch(err) { alert("Error al leer el archivo JSON."); }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
-
-  init();
+}
 </script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+const loader = new GLTFLoader();
+const modelCache = new Map();  // url del .glb -> Promise<THREE.Object3D> (así no se re-descarga al salir/entrar de pantalla)
+const instances  = new Map();  // elemento .viewer-mount -> estado de su visor activo
+
+function loadModel(url){
+  if(!modelCache.has(url)){
+    modelCache.set(url, new Promise((resolve, reject) => {
+      loader.load(url, gltf => resolve(gltf.scene), undefined, reject);
+    }));
+  }
+  return modelCache.get(url);
+}
+
+function makeShadowTexture(){
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(64,64,4,64,64,64);
+  g.addColorStop(0, 'rgba(43,29,18,0.35)');
+  g.addColorStop(1, 'rgba(43,29,18,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+let sharedShadowTex = null;
+
+async function mountViewer(mount){
+  if(instances.has(mount)) return;
+  const url = mount.dataset.model;
+  if(!url) return;
+
+  const state = { alive:true };
+  instances.set(mount, state);
+
+  let template;
+  try{
+    template = await loadModel(url);
+  }catch(err){
+    // No se encontró el .glb todavía (o falló la carga): no rompemos
+    // nada, la foto normal sigue mostrándose debajo.
+    instances.delete(mount);
+    return;
+  }
+  if(!state.alive) return; // la tarjeta ya salió de pantalla mientras cargaba
+
+  const width = mount.clientWidth, height = mount.clientHeight;
+  const canvas = document.createElement('canvas');
+  mount.appendChild(canvas);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true, powerPreference:'low-power' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(width, height, false);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, width/height, 0.1, 100);
+  camera.position.set(0, 0.15, 3.2);
+
+  scene.add(new THREE.HemisphereLight(0xfff3e2, 0x3a2c1c, 1.1));
+  const key = new THREE.DirectionalLight(0xffffff, 1.4);
+  key.position.set(2, 3, 2);
+  scene.add(key);
+  const fillLight = new THREE.DirectionalLight(0xffcf9e, 0.5);
+  fillLight.position.set(-2, -1, 1.5);
+  scene.add(fillLight);
+
+  // El modelo se centra y se escala solo para entrar siempre igual de
+  // grande en la tarjeta, sin importar el tamaño con que lo exportó Meshy.
+  const model = template.clone(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z) || 1;
+  const scale = 1.6 / maxDim;
+  model.scale.setScalar(scale);
+  model.position.sub(center.multiplyScalar(scale));
+
+  const pivot = new THREE.Group();
+  pivot.add(model);
+  scene.add(pivot);
+
+  if(!sharedShadowTex) sharedShadowTex = makeShadowTexture();
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.7, 1.7),
+    new THREE.MeshBasicMaterial({ map: sharedShadowTex, transparent:true, depthWrite:false })
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = -0.62;
+  scene.add(shadow);
+
+  // Arrastrar para girar (con inercia). Cuando nadie lo toca, gira solo
+  // despacito — así siempre se ve "vivo" aunque nadie interactúe.
+  let dragging = false, lastX = 0, velocity = 0.0025;
+  let rotY = Math.random() * Math.PI * 2;
+
+  const toX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
+  const onDown = (e) => { dragging = true; lastX = toX(e); mount.classList.add('dragging'); };
+  const onMove = (e) => {
+    if(!dragging) return;
+    const x = toX(e);
+    const dx = x - lastX;
+    lastX = x;
+    rotY += dx * 0.012;
+    velocity = dx * 0.012;
+    e.preventDefault();
+  };
+  const onUp = () => { dragging = false; mount.classList.remove('dragging'); };
+
+  canvas.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove, { passive:false });
+  window.addEventListener('pointerup', onUp);
+
+  const phase = Math.random() * Math.PI * 2;
+  const clock = new THREE.Clock();
+  let raf = null;
+
+  function tick(){
+    if(!state.alive) return;
+    raf = requestAnimationFrame(tick);
+    const t = clock.getElapsedTime();
+
+    if(!dragging){
+      if(Math.abs(velocity) > 0.0003){ rotY += velocity; velocity *= 0.94; }
+      else{ rotY += 0.0035; }
+    }
+    pivot.rotation.y = rotY;
+    pivot.position.y = Math.sin(t * 1.4 + phase) * 0.06;      // flote suave
+    shadow.material.opacity = 0.55 - Math.abs(Math.sin(t * 1.4 + phase)) * 0.25;
+
+    renderer.render(scene, camera);
+  }
+  tick();
+  mount.classList.add('is-ready');
+
+  const ro = new ResizeObserver(() => {
+    const w = mount.clientWidth, h = mount.clientHeight;
+    if(!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  });
+  ro.observe(mount);
+
+  state.dispose = () => {
+    state.alive = false;
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    canvas.removeEventListener('pointerdown', onDown);
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    renderer.dispose();
+    canvas.remove();
+    mount.classList.remove('is-ready');
+    instances.delete(mount);
+  };
+}
+
+function unmountViewer(mount){
+  const state = instances.get(mount);
+  if(state && state.dispose) state.dispose();
+}
+
+// Solo existe un visor activo por tarjeta visible: se crea al entrar en
+// pantalla y se destruye (libera memoria de video) al salir.
+const viewerObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) mountViewer(entry.target);
+    else unmountViewer(entry.target);
+  });
+}, { threshold: 0.15 });
+
+function observeAllViewers(){
+  document.querySelectorAll('.viewer-mount[data-model]').forEach(el => viewerObserver.observe(el));
+}
+
+// Hay un solo visor 3D en toda la página (el del hero) y está siempre
+// en el DOM, así que alcanza con engancharlo una vez al cargar.
+observeAllViewers();
+</script>
+
+<script>
+  /* ============================================================
+     LISTA DE PRODUCTOS
+     Para agregar uno nuevo, copiá un bloque { ... } y cambiá los
+     datos. "tags" acepta: "dulce", "salado", "vegano", "sin-tacc".
+     "star:true" le pone la cinta de "producto estrella".
+     El nombre de archivo de imagen va sin espacios ni tildes, y vive
+     en la misma carpeta que este index.html (sin subcarpetas).
+
+     El modelo 3D es uno solo para toda la web y vive en el hero, no
+     acá — buscá "producto.glb" en el HTML si querés cambiar ese archivo.
+     ============================================================ */
+  const PRODUCTS = [
+    {
+      id: "barrita-simple",
+      name: "Barrita de granola simple",
+      price: 2000,
+      tags: ["dulce","vegano","sin-tacc"],
+      star: true,
+      img: "barrita-simple.jpg"
+    },
+    {
+      id: "barrita-chocolate",
+      name: "Barrita de granola chocolate",
+      price: 2500,
+      tags: ["dulce","vegano","sin-tacc"],
+      star: true,
+      img: "barrita-chocolate.jpg"
+    },
+    {
+      id: "barrita-limon",
+      name: "Barrita de granola limón",
+      price: 2500,
+      tags: ["dulce","vegano","sin-tacc"],
+      star: true,
+      img: "barrita-limon.jpg"
+    }
+  ];
+
+  const WHATSAPP_NUMBER = "5493512760842";
+  const TAG_LABELS = { "dulce":"Dulce", "salado":"Salado", "vegano":"Vegano", "sin-tacc":"Sin TACC" };
+
+  const cart = {}; // { productId: qty }
+  let currentFilter = "todos";
+
+  const grid = document.getElementById("productGrid");
+  const cartItemsEl = document.getElementById("cartItems");
+  const cartTotalEl = document.getElementById("cartTotal");
+  const cartTotalValueEl = document.getElementById("cartTotalValue");
+  const orderBtn = document.getElementById("orderBtn");
+  const fabCount = document.getElementById("fabCount");
+
+  function money(n){
+    return "$" + n.toLocaleString("es-AR");
+  }
+
+  function placeholderIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <rect x="3" y="5" width="18" height="14" rx="2"/>
+      <circle cx="8.5" cy="10" r="1.6"/>
+      <path d="M21 16l-5.2-5.2a2 2 0 0 0-2.8 0L5 19"/>
+    </svg>`;
+  }
+
+  function renderProducts(){
+    const filtered = PRODUCTS.filter(p => currentFilter === "todos" || p.tags.includes(currentFilter));
+    grid.innerHTML = "";
+
+    if(filtered.length === 0){
+      grid.innerHTML = `<div class="empty-state">Todavía no hay productos en esta categoría. ¡Pronto sumamos más! 👀</div>`;
+      return;
+    }
+
+    filtered.forEach(p => {
+      const qty = cart[p.id] || 0;
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <div class="tag-string"></div>
+        <svg class="tag-peg" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="2" y="1" width="18" height="7" rx="2"/>
+          <path d="M9 8 L5 15 M13 8 L17 15"/>
+          <circle cx="11" cy="4.5" r="1.4" fill="currentColor" stroke="none"/>
+        </svg>
+        <div class="tag-hole"></div>
+        <div class="product-photo">
+          ${p.star ? '<span class="star-ribbon">★ Estrella</span>' : ''}
+          <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="photo-placeholder">
+            ${placeholderIcon()}
+            <span>${p.img}</span>
+          </div>
+        </div>
+        <div class="product-body">
+          <h3>${p.name}</h3>
+          <div class="tag-row">
+            ${p.tags.map(t => `<span class="tag ${t==='dulce'?'tag-dulce':t==='salado'?'tag-salado':''}">${TAG_LABELS[t]}</span>`).join("")}
+          </div>
+          <div class="product-foot">
+            <span class="price">${money(p.price)}</span>
+            <div class="qty-stepper">
+              <button data-action="minus" data-id="${p.id}">−</button>
+              <span data-qty="${p.id}">${qty}</span>
+              <button data-action="plus" data-id="${p.id}">+</button>
+            </div>
+          </div>
+          <button class="add-btn" data-add="${p.id}">Agregar al pedido</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function changeQty(id, delta){
+    const next = Math.max(0, (cart[id] || 0) + delta);
+    if(next === 0){ delete cart[id]; } else { cart[id] = next; }
+    const qtyEl = document.querySelector(`[data-qty="${id}"]`);
+    if(qtyEl) qtyEl.textContent = cart[id] || 0;
+  }
+
+  grid.addEventListener("click", (e) => {
+    const minus = e.target.closest("[data-action='minus']");
+    const plus = e.target.closest("[data-action='plus']");
+    const add = e.target.closest("[data-add]");
+
+    if(minus){ changeQty(minus.dataset.id, -1); }
+    if(plus){ changeQty(plus.dataset.id, 1); }
+
+    if(add){
+      const id = add.dataset.add;
+      if(!cart[id] || cart[id] === 0){ cart[id] = 1; }
+      const qtyEl = document.querySelector(`[data-qty="${id}"]`);
+      if(qtyEl) qtyEl.textContent = cart[id];
+      add.textContent = "Agregado ✓";
+      add.classList.add("added");
+      setTimeout(() => { add.textContent = "Agregar al pedido"; add.classList.remove("added"); }, 900);
+      renderCart();
+      openCart();
+    }
+  });
+
+  document.querySelectorAll(".filter-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter;
+      renderProducts();
+    });
+  });
+
+  function renderCart(){
+    const ids = Object.keys(cart);
+    let total = 0;
+
+    if(ids.length === 0){
+      cartItemsEl.innerHTML = `<p class="cart-empty">Todavía no agregaste productos.</p>`;
+      cartTotalEl.style.display = "none";
+      orderBtn.disabled = true;
+      fabCount.style.display = "none";
+    } else {
+      cartItemsEl.innerHTML = ids.map(id => {
+        const p = PRODUCTS.find(pr => pr.id === id);
+        const subtotal = p.price * cart[id];
+        total += subtotal;
+        return `
+          <div class="cart-item">
+            <div>
+              <div class="ci-name">${p.name}</div>
+              <div class="ci-meta">${cart[id]} × ${money(p.price)} = ${money(subtotal)}</div>
+            </div>
+            <button data-remove="${id}">quitar</button>
+          </div>
+        `;
+      }).join("");
+      cartTotalEl.style.display = "flex";
+      cartTotalValueEl.textContent = money(total);
+      orderBtn.disabled = false;
+
+      const totalQty = ids.reduce((a,id) => a + cart[id], 0);
+      fabCount.style.display = "flex";
+      fabCount.textContent = totalQty;
+    }
+  }
+
+  cartItemsEl.addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-remove]");
+    if(rm){
+      delete cart[rm.dataset.remove];
+      renderProducts();
+      renderCart();
+    }
+  });
+
+  function openCart(){ document.getElementById("cartPanel").classList.add("open"); }
+  document.getElementById("fabBtn").addEventListener("click", () => {
+    document.getElementById("cartPanel").classList.toggle("open");
+  });
+
+  orderBtn.addEventListener("click", () => {
+    const ids = Object.keys(cart);
+    if(ids.length === 0) return;
+    let total = 0;
+    let lines = ids.map(id => {
+      const p = PRODUCTS.find(pr => pr.id === id);
+      const subtotal = p.price * cart[id];
+      total += subtotal;
+      return `- ${p.name} x${cart[id]} — ${money(subtotal)}`;
+    });
+    const msg =
+`¡Hola! Quiero hacer un pedido a Vale la pena 🌾
+
+${lines.join("\n")}
+
+Total: ${money(total)}
+
+Mi dirección de entrega es: [completar]
+¿Está dentro del anillo de circunvalación? `;
+
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+  });
+
+  // menú mobile
+  const menuBtn = document.getElementById("menuBtn");
+  const navLinks = document.getElementById("navLinks");
+  menuBtn.addEventListener("click", () => navLinks.classList.toggle("open"));
+  navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add("in"); io.unobserve(entry.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  renderProducts();
+  renderCart();
+</script>
+
 </body>
 </html>
